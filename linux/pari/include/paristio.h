@@ -4,8 +4,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -17,14 +16,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 typedef struct {
   long s, us;
 } pari_timer;
-
-typedef struct pari_str {
-  char *string; /* start of the output buffer */
-  char *end;    /* end of the output buffer */
-  char *cur;   /* current writing place in the output buffer */
-  size_t size; /* buffer size */
-  int use_stack; /* use stack_malloc instead of malloc ? */
-} pari_str;
 
 typedef unsigned char *byteptr;
 typedef ulong pari_sp;
@@ -83,33 +74,6 @@ typedef struct
   GEN v;
 } forpart_t;
 
-/* Iterate over permutations */
-typedef struct
-{
-  long k, first;
-  GEN v;
-} forperm_t;
-
-/* Iterate over subsets */
-typedef struct
-{
-  long n, k, all, first;
-  GEN v;
-} forsubset_t;
-
-/* Plot engines */
-typedef struct PARI_plot {
-  void (*draw)(struct PARI_plot *T, GEN w, GEN x, GEN y);
-  long width;
-  long height;
-  long hunit;
-  long vunit;
-  long fwidth;
-  long fheight;
-  long dwidth;
-  long dheight;
-} PARI_plot;
-
 /* binary I/O */
 typedef struct GENbin {
   size_t len; /* gsizeword(x) */
@@ -122,6 +86,14 @@ struct pari_mainstack
 {
   pari_sp top, bot, vbot;
   size_t size, rsize, vsize, memused;
+};
+
+extern THREAD struct pari_mainstack *pari_mainstack;
+
+struct pari_thread
+{
+  struct pari_mainstack st;
+  GEN data;
 };
 
 typedef struct pariFILE {
@@ -158,16 +130,9 @@ struct pari_parsestate
 
 struct pari_compilestate
 {
-  long opcode, operand, accesslex, data, localvars, frames, dbginfo;
-  long offset, nblex;
+  long opcode, operand, data, localvars, frames, dbginfo;
+  long offset;
   const char *dbgstart;
-};
-
-struct pari_mtstate
-{
-  long pending_threads;
-  long is_thread;
-  long trace_level;
 };
 
 struct pari_evalstate
@@ -177,22 +142,15 @@ struct pari_evalstate
   long rp;
   long var;
   long lvars;
-  long locks;
   long prec;
   long trace;
-  struct pari_mtstate mt;
+  long pending_threads;
   struct pari_compilestate comp;
 };
 
 struct pari_varstate
 {
   long nvar, max_avail, min_priority, max_priority;
-};
-
-struct pari_filestate
-{
-  pariFILE *file;
-  long serial;
 };
 
 struct gp_context
@@ -202,27 +160,9 @@ struct gp_context
   struct pari_varstate var;
   struct pari_evalstate eval;
   struct pari_parsestate parse;
-  struct pari_filestate file;
+  pariFILE *file;
   jmp_buf *iferr_env;
   GEN err_data;
-};
-
-extern THREAD struct pari_mainstack *pari_mainstack;
-
-struct pari_global_state
-{
-  long bitprec;
-  GEN primetab;
-  GEN seadata;
-  long *varpriority;
-  struct pari_varstate varstate;
-};
-
-struct pari_thread
-{
-  struct pari_mainstack st;
-  struct pari_global_state gs;
-  GEN data;
 };
 
 struct mt_state
@@ -239,40 +179,6 @@ struct pari_mt
   void (*submit)(struct mt_state *mt, long workid, GEN work);
   void (*end)(void);
 };
-
-struct parfor_iter
-{
-  long pending;
-  GEN worker;
-  struct pari_mt pt;
-};
-
-typedef struct
-{
-  GEN a, b;
-  struct parfor_iter iter;
-} parfor_t;
-
-typedef struct
-{
-  GEN x, W;
-  long i, l;
-  struct parfor_iter iter;
-} parforeach_t;
-
-typedef struct
-{
-  GEN v;
-  forprime_t forprime;
-  struct parfor_iter iter;
-} parforprime_t;
-
-typedef struct
-{
-  GEN v;
-  forvec_t forvec;
-  struct parfor_iter iter;
-} parforvec_t;
 
 typedef struct PariOUT {
   void (*putch)(char);
@@ -308,7 +214,6 @@ typedef struct {
 typedef struct {
   GEN z; /* result */
   time_t t; /* time to obtain result */
-  time_t r; /* realtime to obtain result */
 } gp_hist_cell;
 typedef struct {
   gp_hist_cell *v; /* array of previous results, FIFO */
@@ -340,13 +245,13 @@ typedef struct {
   gp_pp *pp;
   gp_path *path, *sopath;
   pariout_t *fmt;
-  ulong lim_lines, flags, linewrap, readline_state, echo;
-  int breakloop, recover, use_readline;
+  ulong lim_lines, flags, linewrap, readline_state;
+  int echo, breakloop, recover, use_readline;
   char *help, *histfile, *prompt, *prompt_cont, *prompt_comment;
-  GEN colormap, graphcolors, plothsizes;
+  GEN colormap, graphcolors;
 
   int secure, simplify, strictmatch, strictargs, chrono;
-  pari_timer *T, *Tw;
+  pari_timer *T;
   ulong primelimit; /* deprecated */
   ulong threadsizemax, threadsize;
 } gp_data;
@@ -356,9 +261,9 @@ extern gp_data *GP_DATA;
 
 extern PariOUT *pariOut, *pariErr;
 extern FILE    *pari_outfile, *pari_logfile, *pari_infile, *pari_errfile;
-extern ulong    pari_logstyle;
+extern ulong    logstyle;
 
-enum pari_logstyles {
+enum logstyles {
     logstyle_none,        /* 0 */
     logstyle_plain,        /* 1 */
     logstyle_color,        /* 2 */

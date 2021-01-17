@@ -4,8 +4,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -24,7 +23,6 @@ enum {
   typ_QUA, /* quadclassunit  */
   typ_GAL, /* galoisinit     */
   typ_BID,
-  typ_BIDZ,
   typ_PRID,
   typ_MODPR,
   typ_RNF
@@ -84,6 +82,7 @@ enum {
   nf_RED = 8,
   nf_PARTIALFACT = 16,
   nf_ROUND2 = 64, /* obsolete */
+  nf_ADDZK =  256,
   nf_GEN_IF_PRINCIPAL = 512
 };
 
@@ -100,7 +99,7 @@ enum {
   LLL_GRAM       = 0x100,
   LLL_KEEP_FIRST = 0x200,
   LLL_INPLACE    = 0x400,
-  LLL_COMPATIBLE = 0x800 /* attempt same behavior on 32/64bit kernels */
+  LLL_COMPATIBLE = 0x800 /* attempt same behaviour on 32/64bit kernels */
 };
 
 /* HNF */
@@ -118,13 +117,11 @@ typedef struct FP_chk_fun {
 
 /* for ideallog / zlog */
 typedef struct {
-  GEN bid;
-  GEN P, k;
-  GEN sprk; /* sprk[i] = sprkinit(P[i]^k[i])*/
+  GEN sprk; /* sprk[i] = zprimestar(P[i]^e[i])*/
+  GEN sarch; /* nfarchstar */
+  GEN ind;  /* ind[i] = start of vector */
+  GEN P, e; /* finit part of conductor = prod P^e */
   GEN archp; /* archimedean part of conductor, in permutation form */
-  GEN mod;
-  GEN U; /* base change matrix blocks from (Z_K/P^k)^* and (Z/2)^#f_oo
-          * to bid.gen */
-  long hU; /* #bid.gen */
-  int no2; /* 1 iff fa2 = fa, i.e. no prime of norm 2 divide exactly bid.mod */
+  long n;  /* total number of generators for all (O_K/P^e)^* and (O_K/f_oo) */
+  GEN U; /* base change matrix from generators to bid.gen */
 } zlog_S;

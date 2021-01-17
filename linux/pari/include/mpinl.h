@@ -6,8 +6,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -110,8 +109,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -251,8 +249,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -316,8 +313,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -476,8 +472,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -603,8 +598,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -734,38 +728,36 @@ divll_pre(ulong a_lo, ulong n, ulong ninv)
 #define __AGM_ATAN_LIMIT                 60
 #define __DIVRR_GMP_LIMIT                4
 #define __EXPNEWTON_LIMIT                66
-#define __EXTGCD_HALFGCD_LIMIT           -1
-#define __F2x_MUL_KARATSUBA_LIMIT        11
-#define __F2x_MUL_MULII_LIMIT            41
-#define __F2xqX_BARRETT_LIMIT            48
-#define __F2xqX_DIVREM_BARRETT_LIMIT     97
-#define __F2xqX_EXTGCD_LIMIT             97
-#define __F2xqX_GCD_LIMIT                605
-#define __F2xqX_HALFGCD_LIMIT            127
-#define __F2xqX_INVBARRETT_LIMIT         50
-#define __F2xqX_REM_BARRETT_LIMIT        101
-#define __Flx_BARRETT2_LIMIT             31
-#define __Flx_BARRETT_LIMIT              92
-#define __Flx_DIVREM2_BARRETT_LIMIT      14
-#define __Flx_DIVREM_BARRETT_LIMIT       161
-#define __Flx_EXTGCD2_LIMIT              61
-#define __Flx_EXTGCD_LIMIT               158
-#define __Flx_GCD2_LIMIT                 1409
-#define __Flx_GCD_LIMIT                  852
-#define __Flx_HALFGCD2_LIMIT             36
-#define __Flx_HALFGCD_LIMIT              120
-#define __Flx_INVBARRETT2_LIMIT          22
-#define __Flx_INVBARRETT_LIMIT           200
-#define __Flx_MUL2_KARATSUBA_LIMIT       11
-#define __Flx_MUL2_MULII_LIMIT           8
-#define __Flx_MUL_KARATSUBA_LIMIT        33
-#define __Flx_MUL_MULII_LIMIT            30
-#define __Flx_REM2_BARRETT_LIMIT         89
-#define __Flx_REM_BARRETT_LIMIT          159
-#define __Flx_SQR2_KARATSUBA_LIMIT       15
-#define __Flx_SQR2_SQRI_LIMIT            14
-#define __Flx_SQR_KARATSUBA_LIMIT        93
-#define __Flx_SQR_SQRI_LIMIT             37
+#define __F2x_MUL_KARATSUBA_LIMIT        15
+#define __Flx_BARRETT_HALFMULII_LIMIT    21
+#define __Flx_BARRETT_KARATSUBA_LIMIT    1172
+#define __Flx_BARRETT_MULII2_LIMIT       16
+#define __Flx_BARRETT_MULII_LIMIT        448
+#define __Flx_BARRETT_QUARTMULII_LIMIT   23
+#define __Flx_DIVREM_BARRETT_LIMIT       768
+#define __Flx_EXTGCD_LIMIT               241
+#define __Flx_GCD_LIMIT                  1017
+#define __Flx_HALFGCD_HALFMULII_LIMIT    48
+#define __Flx_HALFGCD_KARATSUBA_LIMIT    77
+#define __Flx_HALFGCD_MULII2_LIMIT       25
+#define __Flx_HALFGCD_MULII_LIMIT        71
+#define __Flx_HALFGCD_QUARTMULII_LIMIT   52
+#define __Flx_INVBARRETT_HALFMULII_LIMIT 231
+#define __Flx_INVBARRETT_KARATSUBA_LIMIT 5067
+#define __Flx_INVBARRETT_MULII2_LIMIT    26
+#define __Flx_INVBARRETT_MULII_LIMIT     1154
+#define __Flx_INVBARRETT_QUARTMULII_LIMIT 139
+#define __Flx_MUL_HALFMULII_LIMIT        5
+#define __Flx_MUL_KARATSUBA_LIMIT        142
+#define __Flx_MUL_MULII2_LIMIT           5
+#define __Flx_MUL_MULII_LIMIT            7
+#define __Flx_MUL_QUARTMULII_LIMIT       5
+#define __Flx_REM_BARRETT_LIMIT          1266
+#define __Flx_SQR_HALFSQRI_LIMIT         3
+#define __Flx_SQR_KARATSUBA_LIMIT        316
+#define __Flx_SQR_QUARTSQRI_LIMIT        3
+#define __Flx_SQR_SQRI2_LIMIT            7
+#define __Flx_SQR_SQRI_LIMIT             5
 #define __FlxqX_BARRETT_LIMIT            17
 #define __FlxqX_DIVREM_BARRETT_LIMIT     46
 #define __FlxqX_EXTGCD_LIMIT             44
@@ -789,56 +781,51 @@ divll_pre(ulong a_lo, ulong n, ulong ninv)
 #define __FpX_REM_BARRETT_LIMIT          111
 #define __Fp_POW_BARRETT_LIMIT           127
 #define __Fp_POW_REDC_LIMIT              17
-#define __GCD_HALFGCD_LIMIT              -1
-#define __HALFGCD_LIMIT                  3
 #define __INVMOD_GMP_LIMIT               3
 #define __INVNEWTON_LIMIT                75
 #define __LOGAGMCX_LIMIT                 22
 #define __LOGAGM_LIMIT                   6
 #define __MULII_FFT_LIMIT                -1
 #define __MULII_KARATSUBA_LIMIT          -1
-#define __MULRR_MULII_LIMIT              55
+#define __MULRR_MULII_LIMIT              74
 #define __RgX_MUL_LIMIT                  9
 #define __RgX_SQR_LIMIT                  38
 #define __SQRI_FFT_LIMIT                 -1
 #define __SQRI_KARATSUBA_LIMIT           -1
-#define __SQRR_SQRI_LIMIT                12
 #else
 #define __AGM_ATAN_LIMIT                 89
 #define __DIVRR_GMP_LIMIT                4
 #define __EXPNEWTON_LIMIT                197
-#define __EXTGCD_HALFGCD_LIMIT           -1
-#define __F2x_MUL_KARATSUBA_LIMIT        13
-#define __F2x_MUL_MULII_LIMIT            774
-#define __F2xqX_BARRETT_LIMIT            48
-#define __F2xqX_DIVREM_BARRETT_LIMIT     127
-#define __F2xqX_EXTGCD_LIMIT             127
-#define __F2xqX_GCD_LIMIT                884
-#define __F2xqX_HALFGCD_LIMIT            89
-#define __F2xqX_INVBARRETT_LIMIT         40
-#define __F2xqX_REM_BARRETT_LIMIT        127
-#define __Flx_BARRETT2_LIMIT             52
-#define __Flx_BARRETT_LIMIT              164
-#define __Flx_DIVREM2_BARRETT_LIMIT      111
-#define __Flx_DIVREM_BARRETT_LIMIT       470
-#define __Flx_EXTGCD2_LIMIT              184
-#define __Flx_EXTGCD_LIMIT               469
-#define __Flx_GCD2_LIMIT                 1281
-#define __Flx_GCD_LIMIT                  2817
-#define __Flx_HALFGCD2_LIMIT             181
-#define __Flx_HALFGCD_LIMIT              586
-#define __Flx_INVBARRETT2_LIMIT          397
-#define __Flx_INVBARRETT_LIMIT           501
-#define __Flx_MUL2_KARATSUBA_LIMIT       9
-#define __Flx_MUL2_MULII_LIMIT           8
-#define __Flx_MUL_KARATSUBA_LIMIT        57
-#define __Flx_MUL_MULII_LIMIT            146
-#define __Flx_REM2_BARRETT_LIMIT         89
-#define __Flx_REM_BARRETT_LIMIT          388
-#define __Flx_SQR2_KARATSUBA_LIMIT       18
-#define __Flx_SQR2_SQRI_LIMIT            20
-#define __Flx_SQR_KARATSUBA_LIMIT        112
-#define __Flx_SQR_SQRI_LIMIT             183
+#define __F2x_MUL_KARATSUBA_LIMIT        23
+#define __Flx_BARRETT_HALFMULII_LIMIT    23
+#define __Flx_BARRETT_KARATSUBA_LIMIT    905
+#define __Flx_BARRETT_MULII2_LIMIT       647
+#define __Flx_BARRETT_MULII_LIMIT        433
+#define __Flx_BARRETT_QUARTMULII_LIMIT   20
+#define __Flx_DIVREM_BARRETT_LIMIT       1289
+#define __Flx_EXTGCD_LIMIT               632
+#define __Flx_GCD_LIMIT                  2514
+#define __Flx_HALFGCD_HALFMULII_LIMIT    78
+#define __Flx_HALFGCD_KARATSUBA_LIMIT    139
+#define __Flx_HALFGCD_MULII2_LIMIT       537
+#define __Flx_HALFGCD_MULII_LIMIT        91
+#define __Flx_HALFGCD_QUARTMULII_LIMIT   37
+#define __Flx_INVBARRETT_HALFMULII_LIMIT 240
+#define __Flx_INVBARRETT_KARATSUBA_LIMIT 3600
+#define __Flx_INVBARRETT_MULII2_LIMIT    1815
+#define __Flx_INVBARRETT_MULII_LIMIT     1293
+#define __Flx_INVBARRETT_QUARTMULII_LIMIT 73
+#define __Flx_MUL_HALFMULII_LIMIT        7
+#define __Flx_MUL_KARATSUBA_LIMIT        90
+#define __Flx_MUL_MULII2_LIMIT           152
+#define __Flx_MUL_MULII_LIMIT            8
+#define __Flx_MUL_QUARTMULII_LIMIT       7
+#define __Flx_REM_BARRETT_LIMIT          689
+#define __Flx_SQR_HALFSQRI_LIMIT         4
+#define __Flx_SQR_KARATSUBA_LIMIT        159
+#define __Flx_SQR_QUARTSQRI_LIMIT        4
+#define __Flx_SQR_SQRI2_LIMIT            470
+#define __Flx_SQR_SQRI_LIMIT             5
 #define __FlxqX_BARRETT_LIMIT            17
 #define __FlxqX_DIVREM_BARRETT_LIMIT     46
 #define __FlxqX_EXTGCD_LIMIT             44
@@ -862,20 +849,17 @@ divll_pre(ulong a_lo, ulong n, ulong ninv)
 #define __FpX_REM_BARRETT_LIMIT          127
 #define __Fp_POW_BARRETT_LIMIT           11
 #define __Fp_POW_REDC_LIMIT              3
-#define __GCD_HALFGCD_LIMIT              -1
-#define __HALFGCD_LIMIT                  22
 #define __INVMOD_GMP_LIMIT               3
 #define __INVNEWTON_LIMIT                93
 #define __LOGAGMCX_LIMIT                 32
 #define __LOGAGM_LIMIT                   45
 #define __MULII_FFT_LIMIT                -1
 #define __MULII_KARATSUBA_LIMIT          -1
-#define __MULRR_MULII_LIMIT              19
+#define __MULRR_MULII_LIMIT              8
 #define __RgX_MUL_LIMIT                  7
 #define __RgX_SQR_LIMIT                  34
 #define __SQRI_FFT_LIMIT                 -1
 #define __SQRI_KARATSUBA_LIMIT           -1
-#define __SQRR_SQRI_LIMIT                9
 #endif
 #line 2 "../src/kernel/gmp/int.h"
 /* Copyright (C) 2000  The PARI group.
@@ -884,8 +868,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -922,8 +905,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -1016,24 +998,6 @@ affrr_fixlg(GEN y, GEN z) { fixlg(z, lg(y)); affrr(y, z); }
 /*                       ALLOCATE ON STACK                         */
 /*                                                                 */
 /*******************************************************************/
-INLINE void
-set_avma(ulong av) { avma = av; }
-
-INLINE double
-gc_double(pari_sp av, double d) { set_avma(av); return d; }
-INLINE long
-gc_long(pari_sp av, long s) { set_avma(av); return s; }
-INLINE ulong
-gc_ulong(pari_sp av, ulong s) { set_avma(av); return s; }
-INLINE int
-gc_bool(pari_sp av, int s) { set_avma(av); return s; }
-INLINE int
-gc_int(pari_sp av, int s) { set_avma(av); return s; }
-INLINE GEN
-gc_NULL(pari_sp av) { set_avma(av); return NULL; }
-INLINE GEN
-gc_const(pari_sp av, GEN x) { set_avma(av); return x; }
-
 INLINE GEN
 new_chunk(size_t x) /* x is a number of longs */
 {
@@ -1041,9 +1005,9 @@ new_chunk(size_t x) /* x is a number of longs */
   CHECK_CTRLC
   if (x > (avma-pari_mainstack->bot) / sizeof(long))
     new_chunk_resize(x);
-  set_avma((pari_sp)z);
+  avma = (pari_sp)z;
 #ifdef MEMSTEP
-  if (DEBUGMEM>1 && pari_mainstack->memused != DISABLE_MEMUSED) {
+  if (DEBUGMEM && pari_mainstack->memused != DISABLE_MEMUSED) {
     long d = (long)pari_mainstack->memused - (long)z;
     if (labs(d) > 4*MEMSTEP)
     {
@@ -1064,28 +1028,10 @@ stack_malloc(size_t N)
 }
 
 INLINE char *
-stack_malloc_align(size_t N, long k)
-{
-  ulong d = ((ulong)avma) % k, e = ((ulong)N) % k;
-  if (d) (void)new_chunk(d/sizeof(long));
-  if (e) N += k-e;
-  return (char*) new_chunk(nchar2nlong(N));
-}
-
-INLINE char *
 stack_calloc(size_t N)
 {
   char *p = stack_malloc(N);
   memset(p, 0, N); return p;
-}
-
-INLINE char *
-stack_calloc_align(size_t N, long k)
-{
-  ulong d = ((ulong)avma) % k, e = ((ulong)N) % k;
-  if (d) (void)new_chunk(d/sizeof(long));
-  if (e) N += k-e;
-  return stack_calloc(N);
 }
 
 /* cgetg(lg(x), typ(x)), set *lx. Implicit unsetisclone() */
@@ -1292,7 +1238,7 @@ itou(GEN x)
     case 3: return x[2];
     default:
       pari_err_OVERFLOW("t_INT-->ulong assignment");
-      return 0; /* LCOV_EXCL_LINE */
+      return 0; /* not reached */
   }
 }
 
@@ -1301,24 +1247,6 @@ INLINE ulong
 itou_or_0(GEN x) {
   if (lgefint(x) != 3) return 0;
   return (ulong)x[2];
-}
-
-INLINE ulong
-umuluu_or_0(ulong x, ulong y)
-{
-  ulong z;
-  LOCAL_HIREMAINDER;
-  z = mulll(x, y);
-  return hiremainder? 0: z;
-}
-/* return x*y if <= n, else 0. Beware overflow */
-INLINE ulong
-umuluu_le(ulong x, ulong y, ulong n)
-{
-  ulong z;
-  LOCAL_HIREMAINDER;
-  z = mulll(x, y);
-  return (hiremainder || z > n)? 0: z;
 }
 
 INLINE GEN
@@ -1370,14 +1298,6 @@ INLINE ulong int_bit(GEN x, long n)
 /*                                                                 */
 /*******************************************************************/
 INLINE int
-cmpss(long a, long b)
-{ return a>b? 1: (a<b? -1: 0); }
-
-INLINE int
-cmpuu(ulong a, ulong b)
-{ return a>b? 1: (a<b? -1: 0); }
-
-INLINE int
 cmpir(GEN x, GEN y)
 {
   pari_sp av;
@@ -1389,7 +1309,7 @@ cmpir(GEN x, GEN y)
     if (expo(y) >= expi(x)) return 0;
     return signe(x);
   }
-  av=avma; z = itor(x, realprec(y)); set_avma(av);
+  av=avma; z = itor(x, realprec(y)); avma=av;
   return cmprr(z,y); /* cmprr does no memory adjustment */
 }
 INLINE int
@@ -1401,24 +1321,11 @@ cmpsr(long x, GEN y)
   GEN z;
 
   if (!x) return -signe(y);
-  av=avma; z = stor(x, LOWDEFAULTPREC); set_avma(av);
+  av=avma; z = stor(x, LOWDEFAULTPREC); avma=av;
   return cmprr(z,y);
 }
 INLINE int
 cmprs(GEN x, long y) { return -cmpsr(y,x); }
-/* compare x and y */
-INLINE int
-cmpui(ulong x, GEN y)
-{
-  ulong p;
-  if (!x) return -signe(y);
-  if (signe(y) <= 0) return 1;
-  if (lgefint(y) > 3) return -1;
-  p = y[2]; if (p == x) return 0;
-  return p < x ? 1 : -1;
-}
-INLINE int
-cmpiu(GEN x, ulong y) { return -cmpui(y,x); }
 /* compare x and |y| */
 INLINE int
 abscmpui(ulong x, GEN y)
@@ -1466,14 +1373,6 @@ mpcmp(GEN x, GEN y)
 
 /* x == y ? */
 INLINE int
-equalui(ulong x, GEN y)
-{
-  if (!x) return !signe(y);
-  if (signe(y) <= 0 || lgefint(y) != 3) return 0;
-  return ((ulong)y[2] == (ulong)x);
-}
-/* x == y ? */
-INLINE int
 equalsi(long x, GEN y)
 {
   if (!x) return !signe(y);
@@ -1496,8 +1395,6 @@ INLINE int
 absequaliu(GEN x, ulong y) { return absequalui(y,x); }
 INLINE int
 equalis(GEN x, long y) { return equalsi(y,x); }
-INLINE int
-equaliu(GEN x, ulong y) { return equalui(y,x); }
 
 /* assume x != 0, is |x| == 2^n ? */
 INLINE int
@@ -1633,7 +1530,7 @@ remii(GEN a, GEN b) { return dvmdii(a,b,ONLY_REM); }
 INLINE GEN
 divss(long x, long y) { return stoi(x / y); }
 INLINE GEN
-modss(long x, long y) { return utoi(smodss(x, y)); }
+modss(long x, long y) { return stoi(smodss(x, y)); }
 INLINE GEN
 remss(long x, long y) { return stoi(x % y); }
 INLINE long
@@ -1674,13 +1571,14 @@ ceildivuu(ulong a, ulong b)
   return (a%b)? c+1: c;
 }
 
+
 INLINE ulong
-uabsdivui_rem(ulong x, GEN y, ulong *r)
+udivui_rem(ulong x, GEN y, ulong *r)
 {
   long q, s = signe(y);
   LOCAL_HIREMAINDER;
 
-  if (!s) pari_err_INV("uabsdivui_rem",gen_0);
+  if (!s) pari_err_INV("udivui_rem",gen_0);
   if (!x || lgefint(y)>3) { *r = x; return 0; }
   hiremainder=0; q = (long)divll(x, (ulong)y[2]);
   if (s < 0) q = -q;
@@ -1690,7 +1588,7 @@ uabsdivui_rem(ulong x, GEN y, ulong *r)
 /* assume d != 0 and |n| / d can be represented as an ulong.
  * Return |n|/d, set *r = |n| % d */
 INLINE ulong
-uabsdiviu_rem(GEN n, ulong d, ulong *r)
+udiviu_rem(GEN n, ulong d, ulong *r)
 {
   switch(lgefint(n))
   {
@@ -1772,14 +1670,15 @@ INLINE long
 smodis(GEN x, long y)
 {
   pari_sp av = avma;
-  long r; (void)divis_rem(x,y, &r);
-  return gc_long(av, (r >= 0)? r: labs(y) + r);
+  long r;
+  (void)divis_rem(x,y, &r); avma = av; return (r >= 0) ? r: labs(y) + r;
 }
 INLINE GEN
 modis(GEN x, long y) { return stoi(smodis(x,y)); }
 INLINE GEN
 modsi(long x, GEN y) {
-  long r; (void)sdivsi_rem(x, y, &r);
+  long r;
+  (void)sdivsi_rem(x, y, &r);
   return (r >= 0)? stoi(r): addsi_sign(r, y, 1);
 }
 
@@ -1791,11 +1690,6 @@ umodui(ulong x, GEN y)
   return x % (ulong)y[2];
 }
 
-INLINE ulong
-ugcdiu(GEN x, ulong y) { return ugcd(umodiu(x,y), y); }
-INLINE ulong
-ugcdui(ulong y, GEN x) { return ugcd(umodiu(x,y), y); }
-
 INLINE GEN
 remsi(long x, GEN y)
 { long r; (void)sdivsi_rem(x,y, &r); return stoi(r); }
@@ -1804,7 +1698,7 @@ remis(GEN x, long y)
 {
   pari_sp av = avma;
   long r;
-  (void)divis_rem(x,y, &r); set_avma(av); return stoi(r);
+  (void)divis_rem(x,y, &r); avma = av; return stoi(r);
 }
 
 INLINE GEN
@@ -1813,7 +1707,7 @@ rdivis(GEN x, long y, long prec)
   GEN z = cgetr(prec);
   pari_sp av = avma;
   affrr(divrs(itor(x,prec), y),z);
-  set_avma(av); return z;
+  avma = av; return z;
 }
 INLINE GEN
 rdivsi(long x, GEN y, long prec)
@@ -1821,7 +1715,7 @@ rdivsi(long x, GEN y, long prec)
   GEN z = cgetr(prec);
   pari_sp av = avma;
   affrr(divsr(x, itor(y,prec)), z);
-  set_avma(av); return z;
+  avma = av; return z;
 }
 INLINE GEN
 rdivss(long x, long y, long prec)
@@ -1829,61 +1723,58 @@ rdivss(long x, long y, long prec)
   GEN z = cgetr(prec);
   pari_sp av = avma;
   affrr(divrs(stor(x, prec), y), z);
-  set_avma(av); return z;
+  avma = av; return z;
 }
 
 INLINE void
 rdiviiz(GEN x, GEN y, GEN z)
 {
-  long prec = realprec(z), lx = lgefint(x), ly = lgefint(y);
-  if (lx == 2) { affur(0, z); return; }
-  if (ly == 3)
-  {
-    affir(x, z); if (signe(y) < 0) togglesign(z);
-    affrr(divru(z, y[2]), z);
-  }
-  else if (lx > prec + 1 || ly > prec + 1)
-  {
-    affir(x,z); affrr(divri(z, y), z);
+  pari_sp av = avma;
+  long prec = realprec(z);
+  affir(x, z);
+  if (!is_bigint(y)) {
+    affrr(divrs(z, y[2]), z);
+    if (signe(y) < 0) togglesign(z);
   }
   else
-  {
-    long b = bit_accuracy(prec) + expi(y) - expi(x) + 1;
-    GEN q = divii(b > 0? shifti(x, b): x, y);
-    affir(q, z); if (b > 0) shiftr_inplace(z, -b);
-  }
-  set_avma((ulong)z);
+    affrr(divrr(z, itor(y,prec)), z);
+  avma = av;
 }
 INLINE GEN
 rdivii(GEN x, GEN y, long prec)
-{ GEN z = cgetr(prec); rdiviiz(x, y, z); return z; }
+{
+  GEN z = cgetr(prec);
+  pari_sp av = avma;
+  affir(x, z);
+  if (lg(y) == 3) {
+    affrr(divru(z, y[2]), z);
+    if (signe(y) < 0) togglesign(z);
+  }
+  else
+    affrr(divrr(z, itor(y,prec)), z);
+  avma = av; return z;
+}
 INLINE GEN
-fractor(GEN x, long prec)
-{ return rdivii(gel(x,1), gel(x,2), prec); }
+fractor(GEN x, long prec) { return rdivii(gel(x,1), gel(x,2), prec); }
 
 INLINE int
 dvdii(GEN x, GEN y)
 {
-  pari_sp av = avma;
-  GEN r;
-  if (!signe(x)) return 1;
-  if (!signe(y)) return 0;
-  r = remii(x,y);
-  return gc_bool(av, r == gen_0);
+  pari_sp av=avma;
+  GEN r = remii(x,y);
+  avma = av; return r == gen_0;
 }
 INLINE int
 dvdsi(long x, GEN y)
 {
-  if (x == 0) return 1;
-  if (!signe(y)) return 0;
+  if (!signe(y)) return x == 0;
   if (lgefint(y) != 3) return 0;
   return x % y[2] == 0;
 }
 INLINE int
 dvdui(ulong x, GEN y)
 {
-  if (x == 0) return 1;
-  if (!signe(y)) return 0;
+  if (!signe(y)) return x == 0;
   if (lgefint(y) != 3) return 0;
   return x % y[2] == 0;
 }
@@ -1900,7 +1791,7 @@ dvdisz(GEN x, long y, GEN z)
   const pari_sp av = avma;
   long r;
   GEN p1 = divis_rem(x,y, &r);
-  set_avma(av); if (r) return 0;
+  avma = av; if (r) return 0;
   affii(p1,z); return 1;
 }
 INLINE int
@@ -1908,17 +1799,19 @@ dvdiuz(GEN x, ulong y, GEN z)
 {
   const pari_sp av = avma;
   ulong r;
-  GEN p1 = absdiviu_rem(x,y, &r);
-  set_avma(av); if (r) return 0;
+  GEN p1 = diviu_rem(x,y, &r);
+  avma = av; if (r) return 0;
   affii(p1,z); return 1;
 }
 INLINE int
 dvdiiz(GEN x, GEN y, GEN z)
 {
   const pari_sp av=avma;
-  GEN p2, p1 = dvmdii(x,y,&p2);
-  if (signe(p2)) return gc_bool(av,0);
-  affii(p1,z); return gc_bool(av,1);
+  GEN p2;
+  const GEN p1=dvmdii(x,y,&p2);
+
+  if (signe(p2)) { avma=av; return 0; }
+  affii(p1,z); avma=av; return 1;
 }
 
 INLINE ulong
@@ -1947,7 +1840,7 @@ Fl_mul_pre(ulong a, ulong b, ulong p, ulong pi)
 }
 
 INLINE ulong
-Fl_addmul_pre(ulong y0, ulong x0, ulong x1, ulong p, ulong pi)
+Fl_addmul_pre(ulong x0, ulong x1, ulong y0, ulong p, ulong pi)
 {
   ulong l0, h0;
   LOCAL_HIREMAINDER;
@@ -2095,10 +1988,8 @@ Fl_sqr(ulong a, ulong p)
   if (!hiremainder) return x % p;
   (void)divll(x,p); return hiremainder;
 }
-/* don't assume that p is prime: can't special case a = 0 */
 INLINE ulong
-Fl_div(ulong a, ulong b, ulong p)
-{ return Fl_mul(a, Fl_inv(b, p), p); }
+Fl_div(ulong a, ulong b, ulong p) { return Fl_mul(a, Fl_inv(b, p), p); }
 
 /*******************************************************************/
 /*                                                                 */
@@ -2148,6 +2039,7 @@ vali(GEN x)
   for (i=0; !*xp; i++) xp=int_nextW(xp);
   return vals(*xp) + i * BITS_IN_LONG;
 }
+
 
 /* assume x > 0 */
 INLINE long
@@ -2298,116 +2190,116 @@ mpaff(GEN x, GEN y) { if (typ(x)==t_INT) affiz(x, y); else affrr(x,y); }
 /*******************************************************************/
 
 INLINE void addiiz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affii(addii(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(addii(x,y),z); avma = av; }
 INLINE void addirz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(addir(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(addir(x,y),z); avma = av; }
 INLINE void addriz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(addri(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(addri(x,y),z); avma = av; }
 INLINE void addrrz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(addrr(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(addrr(x,y),z); avma = av; }
 INLINE void addsiz(long s, GEN y, GEN z)
-{ pari_sp av = avma; affii(addsi(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(addsi(s,y),z); avma = av; }
 INLINE void addsrz(long s, GEN y, GEN z)
-{ pari_sp av = avma; affrr(addsr(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(addsr(s,y),z); avma = av; }
 INLINE void addssz(long s, long y, GEN z)
-{ pari_sp av = avma; affii(addss(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(addss(s,y),z); avma = av; }
 
 INLINE void diviiz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affii(divii(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(divii(x,y),z); avma = av; }
 INLINE void divirz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(divir(x,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(divir(x,y),z); avma = av; }
 INLINE void divisz(GEN x, long y, GEN z)
-{ pari_sp av = avma; affii(divis(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(divis(x,y),z); avma = av; }
 INLINE void divriz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(divri(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(divri(x,y),z); avma = av; }
 INLINE void divrrz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(divrr(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(divrr(x,y),z); avma = av; }
 INLINE void divrsz(GEN y, long s, GEN z)
-{ pari_sp av = avma; affrr(divrs(y,s),z); set_avma(av); }
+{ pari_sp av = avma; affrr(divrs(y,s),z); avma = av; }
 INLINE void divsiz(long x, GEN y, GEN z)
 { long junk; affsi(sdivsi_rem(x,y,&junk), z); }
 INLINE void divsrz(long s, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(divsr(s,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(divsr(s,y),z); avma = av; }
 INLINE void divssz(long x, long y, GEN z)
 { affsi(x/y, z); }
 
 INLINE void modisz(GEN y, long s, GEN z)
-{ affsi(smodis(y,s),z); }
+{ pari_sp av = avma; affii(modis(y,s),z); avma = av; }
 INLINE void modsiz(long s, GEN y, GEN z)
-{ pari_sp av = avma; affii(modsi(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(modsi(s,y),z); avma = av; }
 INLINE void modssz(long s, long y, GEN z)
-{ affsi(smodss(s,y),z); }
+{ pari_sp av = avma; affii(modss(s,y),z); avma = av; }
 
 INLINE void mpaddz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(mpadd(x,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(mpadd(x,y),z); avma = av; }
 INLINE void mpsubz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(mpsub(x,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(mpsub(x,y),z); avma = av; }
 INLINE void mpmulz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(mpmul(x,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(mpmul(x,y),z); avma = av; }
 
 INLINE void muliiz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affii(mulii(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(mulii(x,y),z); avma = av; }
 INLINE void mulirz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(mulir(x,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(mulir(x,y),z); avma = av; }
 INLINE void mulriz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(mulri(x,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(mulri(x,y),z); avma = av; }
 INLINE void mulrrz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(mulrr(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(mulrr(x,y),z); avma = av; }
 INLINE void mulsiz(long s, GEN y, GEN z)
-{ pari_sp av = avma; affii(mulsi(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(mulsi(s,y),z); avma = av; }
 INLINE void mulsrz(long s, GEN y, GEN z)
-{ pari_sp av = avma; mpaff(mulsr(s,y),z); set_avma(av); }
+{ pari_sp av = avma; mpaff(mulsr(s,y),z); avma = av; }
 INLINE void mulssz(long s, long y, GEN z)
-{ pari_sp av = avma; affii(mulss(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(mulss(s,y),z); avma = av; }
 
 INLINE void remiiz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affii(remii(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(remii(x,y),z); avma = av; }
 INLINE void remisz(GEN y, long s, GEN z)
-{ pari_sp av = avma; affii(remis(y,s),z); set_avma(av); }
+{ pari_sp av = avma; affii(remis(y,s),z); avma = av; }
 INLINE void remsiz(long s, GEN y, GEN z)
-{ pari_sp av = avma; affii(remsi(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(remsi(s,y),z); avma = av; }
 INLINE void remssz(long s, long y, GEN z)
-{ pari_sp av = avma; affii(remss(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(remss(s,y),z); avma = av; }
 
 INLINE void subiiz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affii(subii(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(subii(x,y),z); avma = av; }
 INLINE void subirz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(subir(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(subir(x,y),z); avma = av; }
 INLINE void subisz(GEN y, long s, GEN z)
-{ pari_sp av = avma; affii(addsi(-s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(addsi(-s,y),z); avma = av; }
 INLINE void subriz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(subri(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(subri(x,y),z); avma = av; }
 INLINE void subrrz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; affrr(subrr(x,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(subrr(x,y),z); avma = av; }
 INLINE void subrsz(GEN y, long s, GEN z)
-{ pari_sp av = avma; affrr(addsr(-s,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(addsr(-s,y),z); avma = av; }
 INLINE void subsiz(long s, GEN y, GEN z)
-{ pari_sp av = avma; affii(subsi(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affii(subsi(s,y),z); avma = av; }
 INLINE void subsrz(long s, GEN y, GEN z)
-{ pari_sp av = avma; affrr(subsr(s,y),z); set_avma(av); }
+{ pari_sp av = avma; affrr(subsr(s,y),z); avma = av; }
 INLINE void subssz(long x, long y, GEN z) { addssz(x,-y,z); }
 
 INLINE void
 dvmdssz(long x, long y, GEN z, GEN t) {
   pari_sp av = avma;
   long r;
-  affii(divss_rem(x,y, &r), z); set_avma(av); affsi(r,t);
+  affii(divss_rem(x,y, &r), z); avma = av; affsi(r,t);
 }
 INLINE void
 dvmdsiz(long x, GEN y, GEN z, GEN t) {
   pari_sp av = avma;
   long r;
-  affii(divsi_rem(x,y, &r), z); set_avma(av); affsi(r,t);
+  affii(divsi_rem(x,y, &r), z); avma = av; affsi(r,t);
 }
 INLINE void
 dvmdisz(GEN x, long y, GEN z, GEN t) {
   pari_sp av = avma;
   long r;
-  affii(divis_rem(x,y, &r),z); set_avma(av); affsi(r,t);
+  affii(divis_rem(x,y, &r),z); avma = av; affsi(r,t);
 }
 INLINE void
 dvmdiiz(GEN x, GEN y, GEN z, GEN t) {
   pari_sp av = avma;
   GEN r;
-  affii(dvmdii(x,y,&r),z); affii(r,t); set_avma(av);
+  affii(dvmdii(x,y,&r),z); affii(r,t); avma=av;
 }

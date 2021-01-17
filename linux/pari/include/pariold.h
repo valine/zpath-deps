@@ -4,8 +4,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -13,34 +12,11 @@ with the package; see the file 'COPYING'. If not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 /* For compatibility with older PARI versions */
-#define nbessel ybessel
-#define ZXX_to_Kronecker RgXX_to_Kronecker
-#define ZXX_to_Kronecker_spec RgXX_to_Kronecker_spec
-#define perf qfperfection
-#define rootpadic polrootspadic
-#define rootsof1 nfrootsof1
-#define rootsof1_kannan nfrootsof1
-#define hash_str2 hash_str
-#define Strtex strtex
-#define Strprintf strprintf
-#define Strchr pari_strchr
-#define Strexpand strexpand
-#define LOG2 M_LN2
-#define truecoeff truecoef
-#define polcoeff0 polcoef
-#define polcoeff_i polcoef_i
-#define factorcantor0 factormod0
-#define factcantor factmod
-#define matsolvemod0 matsolvemod
-#define rootmod2 polrootsmod
-#define rootmod polrootsmod
-#define resultant_all RgX_resultant_all
-#define vecbinome vecbinomial
-#define Xadic_lindep lindep_Xadic
-#define padic_lindep lindep_padic
-#define ZM_ker_ratlift ZM_ker
-#define keri ZM_ker
-/* Following obsoleted in 2.9.* (2016) */
+/*functions renamed*/
+#define cmpui abscmpui
+#define equalui absequalui
+#define equaliu absequaliu
+#define cmpiu abscmpiu
 #define absi_factor absZ_factor
 #define absi_factor_limit absZ_factor_limit
 #define absi_cmp abscmpii
@@ -54,8 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 #define concat1 gconcat1
 #define mathell ellheightmatrix
 #define ghell ellheight
-
-/* Following obsoleted in 2.7.* (2014) */
 #define mpexp1 mpexpm1
 #define ggamd ggammah
 #define gach gacosh
@@ -109,8 +83,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 #define greffe(x,y,z) (RgX_to_ser(x,y))
 #define newbloc newblock
 #define killbloc killblock
-#define taille2 gsizebyte
-#define taille gsizeword
+#define taille2 gsizeword
+#define taille gsizebyte
 #define polymodrecip modreverse
 #define primedec idealprimedec
 #define initalg nfinit
@@ -129,6 +103,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 #define minideal(x,y,z,t) idealmin(x,y,z)
 #define idealhermite idealhnf
 #define srgcd(x) RgX_gcd(x)
+#define nfdiscf0(x) nfdisc0(x)
 #define discf(x) nfdisc(x)
 #define discsr(x) poldisc0((x),-1)
 #define factorpadic4 factorpadic

@@ -4,39 +4,12 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
 with the package; see the file 'COPYING'. If not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
-
-/*********************************************************************/
-/*                       MALLOC/FREE WRAPPERS                        */
-/*********************************************************************/
-#define BLOCK_SIGALRM_START          \
-{                                    \
-  int block=PARI_SIGINT_block;       \
-  PARI_SIGINT_block = 2;             \
-  MT_SIGINT_BLOCK(block);
-
-#define BLOCK_SIGINT_START           \
-{                                    \
-  int block=PARI_SIGINT_block;       \
-  PARI_SIGINT_block = 1;             \
-  MT_SIGINT_BLOCK(block);
-
-#define BLOCK_SIGINT_END             \
-  PARI_SIGINT_block = block;         \
-  MT_SIGINT_UNBLOCK(block);          \
-  if (!block && PARI_SIGINT_pending) \
-  {                                  \
-    int sig = PARI_SIGINT_pending;   \
-    PARI_SIGINT_pending = 0;         \
-    raise(sig);                      \
-  }                                  \
-}
 
 /*******************************************************************/
 /*                                                                 */
@@ -176,34 +149,6 @@ mkpolmod(GEN x, GEN y) { retmkpolmod(x,y); }
 INLINE GEN
 mkfrac(GEN x, GEN y) { retmkfrac(x,y); }
 INLINE GEN
-mkfracss(long x, long y) { retmkfrac(stoi(x),utoipos(y)); }
-/* q = n/d a t_FRAC or t_INT; recover (n,d) */
-INLINE void
-Qtoss(GEN q, long *n, long *d)
-{
-  if (typ(q) == t_INT) { *n = itos(q); *d = 1; }
-  else { *n = itos(gel(q,1)); *d = itou(gel(q,2)); }
-}
-INLINE GEN
-sstoQ(long n, long d)
-{
-  ulong r;
-  long g, q;
-  if (!n)
-  {
-    if (!d) pari_err_INV("sstoQ",gen_0);
-    return gen_0;
-  }
-  if (d < 0) { d = -d; n = -n; }
-  if (d == 1) return stoi(n);
-  q = udivuu_rem(labs(n),d,&r);
-  if (!r) return n > 0? utoipos(q): utoineg(q);
-  g = ugcd(d,r); /* gcd(n,d) */
-  if (g != 1) { n /= g; d /= g; }
-  retmkfrac(stoi(n), utoi(d));
-}
-
-INLINE GEN
 mkfraccopy(GEN x, GEN y) { retmkfrac(icopy(x), icopy(y)); }
 INLINE GEN
 mkrfrac(GEN x, GEN y) { GEN v = cgetg(3, t_RFRAC);
@@ -306,11 +251,6 @@ INLINE GEN
 mkmoo(void) { GEN v = cgetg(2, t_INFINITY); gel(v,1) = gen_m1; return v; }
 INLINE long
 inf_get_sign(GEN x) { return signe(gel(x,1)); }
-INLINE GEN
-mkmat22s(long a, long b, long c, long d) {retmkmat2(mkcol2s(a,c),mkcol2s(b,d));}
-INLINE GEN
-mkmat22(GEN a, GEN b, GEN c, GEN d) { retmkmat2(mkcol2(a,c),mkcol2(b,d)); }
-
 /* pol */
 INLINE GEN
 pol_x(long v) {
@@ -334,15 +274,6 @@ pol_xnall(long n, long v)
 {
   if (n < 0) retmkrfrac(gen_1, pol_xn(-n,v));
   return pol_xn(n, v);
-}
-/* x^n, assume n >= 0 */
-INLINE GEN
-polxn_Flx(long n, long sv) {
-  long i, a = n+2;
-  GEN p = cgetg(a+1, t_VECSMALL);
-  p[1] = sv;
-  for (i = 2; i < a; i++) p[i] = 0;
-  p[a] = 1; return p;
 }
 INLINE GEN
 pol_1(long v) {
@@ -514,16 +445,6 @@ zeromatcopy(long m, long n)
   return y;
 }
 
-INLINE GEN
-zerovec_block(long len)
-{
-  long i;
-  GEN blk = cgetg_block(len + 1, t_VEC);
-  for (i = 1; i <= len; ++i)
-    gel(blk, i) = gen_0;
-  return blk;
-}
-
 /* i-th vector in the standard basis */
 INLINE GEN
 col_ei(long n, long i) { GEN e = zerocol(n); gel(e,i) = gen_1; return e; }
@@ -547,16 +468,9 @@ vectrunc_init(long l)
   GEN z = new_chunk(l);
   z[0] = evaltyp(t_VEC) | _evallg(1); return z;
 }
-INLINE GEN
-coltrunc_init(long l)
-{
-  GEN z = new_chunk(l);
-  z[0] = evaltyp(t_COL) | _evallg(1); return z;
-}
 INLINE void
-lg_increase(GEN x) { x[0]++; }
-INLINE void
-vectrunc_append(GEN x, GEN t) { gel(x, lg(x)) = t; lg_increase(x); }
+vectrunc_append(GEN x, GEN t)
+{ long l = lg(x); gel(x,l) = t; setlg(x, l+1); }
 INLINE void
 vectrunc_append_batch(GEN x, GEN y)
 {
@@ -572,33 +486,8 @@ vecsmalltrunc_init(long l)
   z[0] = evaltyp(t_VECSMALL) | _evallg(1); return z;
 }
 INLINE void
-vecsmalltrunc_append(GEN x, long t) { x[ lg(x) ] = t; lg_increase(x); }
-
-/*******************************************************************/
-/*                                                                 */
-/*                    STRING HASH FUNCTIONS                        */
-/*                                                                 */
-/*******************************************************************/
-INLINE ulong
-hash_str(const char *str)
-{
-  ulong hash = 5381UL, c;
-  while ( (c = (ulong)*str++) )
-    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-  return hash;
-}
-INLINE ulong
-hash_str_len(const char *str, long len)
-{
-  ulong hash = 5381UL;
-  long i;
-  for (i = 0; i < len; i++)
-  {
-    ulong c = (ulong)*str++;
-    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-  }
-  return hash;
-}
+vecsmalltrunc_append(GEN x, long t)
+{ long l = lg(x); x[l] = t; setlg(x, l+1); }
 
 /*******************************************************************/
 /*                                                                 */
@@ -635,16 +524,6 @@ vec_append(GEN V, GEN s)
 }
 /* shallow*/
 INLINE GEN
-vec_prepend(GEN v, GEN s)
-{
-  long i, l = lg(v);
-  GEN w = cgetg(l+1, typ(v));
-  gel(w,1) = s;
-  for (i = 2; i <= l; ++i) gel(w,i) = gel(v,i-1);
-  return w;
-}
-/* shallow*/
-INLINE GEN
 vec_setconst(GEN v, GEN x)
 {
   long i, l = lg(v);
@@ -669,21 +548,29 @@ vecsmall_lengthen(GEN v, long n)
 }
 
 INLINE GEN
-vec_to_vecsmall(GEN x)
-{ pari_APPLY_long(itos(gel(x,i))) }
-INLINE GEN
-vecsmall_to_vec(GEN x)
-{ pari_APPLY_type(t_VEC, stoi(x[i])) }
-INLINE GEN
-vecsmall_to_vec_inplace(GEN z)
+vec_to_vecsmall(GEN z)
 {
   long i, l = lg(z);
-  for (i=1; i<l; i++) gel(z,i) = stoi(z[i]);
-  settyp(z, t_VEC); return z;
+  GEN x = cgetg(l, t_VECSMALL);
+  for (i=1; i<l; i++) x[i] = itos(gel(z,i));
+  return x;
 }
 INLINE GEN
-vecsmall_to_col(GEN x)
-{ pari_APPLY_type(t_COL, stoi(x[i])) }
+vecsmall_to_vec(GEN z)
+{
+  long i, l = lg(z);
+  GEN x = cgetg(l,t_VEC);
+  for (i=1; i<l; i++) gel(x,i) = stoi(z[i]);
+  return x;
+}
+INLINE GEN
+vecsmall_to_col(GEN z)
+{
+  long i, l = lg(z);
+  GEN x = cgetg(l,t_COL);
+  for (i=1; i<l; i++) gel(x,i) = stoi(z[i]);
+  return x;
+}
 
 INLINE int
 vecsmall_lexcmp(GEN x, GEN y)
@@ -884,16 +771,6 @@ RgV_is_QV(GEN x)
     if (!is_rational_t(typ(gel(x,i)))) return 0;
   return 1;
 }
-INLINE long
-RgV_isin_i(GEN v, GEN x, long n)
-{
-  long i;
-  for (i = 1; i <= n; i++)
-    if (gequal(gel(v,i), x)) return i;
-  return 0;
-}
-INLINE long
-RgV_isin(GEN v, GEN x) { return RgV_isin_i(v, x, lg(v)-1); }
 
 /********************************************************************/
 /**                                                                **/
@@ -925,7 +802,7 @@ pari_stack_alloc(pari_stack *s, long nb)
   {
     while (s->n+nb > alloc) alloc <<= 1;
   }
-  pari_realloc_ip(sdat,alloc*s->size);
+  *sdat = pari_realloc(*sdat,alloc*s->size);
   s->alloc = alloc;
 }
 
@@ -970,22 +847,37 @@ vecslicepermute(GEN A, GEN p, long y1, long y2)
 }
 /* rowslice(rowpermute(A,p), x1, x2) */
 INLINE GEN
-rowslicepermute(GEN x, GEN p, long j1, long j2)
-{ pari_APPLY_same(vecslicepermute(gel(x,i),p,j1,j2)) }
-
+rowslicepermute(GEN A, GEN p, long x1, long x2)
+{
+  long i, lB = lg(A);
+  GEN B = cgetg(lB, typ(A));
+  for (i=1; i<lB; i++) gel(B,i) = vecslicepermute(gel(A,i),p,x1,x2);
+  return B;
+}
 INLINE GEN
-rowslice(GEN x, long j1, long j2)
-{ pari_APPLY_same(vecslice(gel(x,i), j1, j2)) }
+rowslice(GEN A, long x1, long x2)
+{
+  long i, lB = lg(A);
+  GEN B = cgetg(lB, typ(A));
+  for (i=1; i<lB; i++) gel(B,i) = vecslice(gel(A,i),x1,x2);
+  return B;
+}
 
 INLINE GEN
 matslice(GEN A, long x1, long x2, long y1, long y2)
-{ return rowslice(vecslice(A, y1, y2), x1, x2); }
+{
+  return rowslice(vecslice(A, y1, y2), x1, x2);
+}
 
 /* shallow, remove coeff of index j */
 INLINE GEN
-rowsplice(GEN x, long j)
-{ pari_APPLY_same(vecsplice(gel(x,i), j)) }
-
+rowsplice(GEN a, long j)
+{
+  long i, l;
+  GEN b = cgetg_copy(a,&l);
+  for (i = 1; i < l; i++) gel(b,i) = vecsplice(gel(a,i), j);
+  return b;
+}
 /* shallow, remove coeff of index j */
 INLINE GEN
 vecsplice(GEN a, long j)
@@ -1010,15 +902,30 @@ RgM_minor(GEN a, long i, long j)
 
 /* A[x0,] */
 INLINE GEN
-row(GEN x, long j)
-{ pari_APPLY_type(t_VEC, gcoeff(x, j, i)) }
+row(GEN A, long x0)
+{
+  long i, lB = lg(A);
+  GEN B  = cgetg(lB, t_VEC);
+  for (i=1; i<lB; i++) gel(B, i) = gcoeff(A, x0, i);
+  return B;
+}
 INLINE GEN
-Flm_row(GEN x, long j)
-{ pari_APPLY_ulong((ulong)coeff(x, j, i)) }
+Flm_row(GEN A, long x0)
+{
+  long i, lB = lg(A);
+  GEN B  = cgetg(lB, t_VECSMALL);
+  for (i=1; i<lB; i++) B[i] = coeff(A, x0, i);
+  return B;
+}
 /* A[x0,] */
 INLINE GEN
-rowcopy(GEN x, long j)
-{ pari_APPLY_type(t_VEC, gcopy(gcoeff(x, j, i))) }
+rowcopy(GEN A, long x0)
+{
+  long i, lB = lg(A);
+  GEN B  = cgetg(lB, t_VEC);
+  for (i=1; i<lB; i++) gel(B, i) = gcopy(gcoeff(A, x0, i));
+  return B;
+}
 /* A[x0, x1..x2] */
 INLINE GEN
 row_i(GEN A, long x0, long x1, long x2)
@@ -1050,12 +957,12 @@ vecsmall_reverse(GEN A)
 INLINE void
 vecreverse_inplace(GEN y)
 {
-  long l = lg(y), lim = l>>1, i;
+  long ly = lg(y), lim = ly>>1, i;
   for (i = 1; i <= lim; i++)
   {
     GEN z = gel(y,i);
-    gel(y,i)    = gel(y,l-i);
-    gel(y,l-i) = z;
+    gel(y,i)    = gel(y,ly-i);
+    gel(y,ly-i) = z;
   }
 }
 
@@ -1063,38 +970,37 @@ INLINE GEN
 vecsmallpermute(GEN A, GEN p) { return perm_mul(A, p); }
 
 INLINE GEN
-vecpermute(GEN A, GEN x)
-{ pari_APPLY_type(typ(A), gel(A, x[i])) }
-
+vecpermute(GEN A, GEN p)
+{
+  long i,lB = lg(p);
+  GEN B = cgetg(lB, typ(A));
+  for (i=1; i<lB; i++) gel(B, i) = gel(A, p[i]);
+  return B;
+}
 INLINE GEN
-rowpermute(GEN x, GEN p)
-{ pari_APPLY_same(typ(gel(x,i)) == t_VECSMALL ? vecsmallpermute(gel(x, i), p)
-                                              : vecpermute(gel(x, i), p))
+rowpermute(GEN A, GEN p)
+{
+  long i, lB = lg(A);
+  GEN B = cgetg(lB, typ(A));
+  for (i=1; i<lB; i++)
+    gel(B, i) = typ(gel(A,i)) == t_VECSMALL ? vecsmallpermute(gel(A, i), p):
+                                                    vecpermute(gel(A, i), p);
+  return B;
 }
 /*******************************************************************/
 /*                                                                 */
 /*                          PERMUTATIONS                           */
 /*                                                                 */
 /*******************************************************************/
-INLINE GEN
-identity_zv(long n)
-{
-  GEN v = cgetg(n+1, t_VECSMALL);
-  long i;
-  for (i = 1; i <= n; i++) v[i] = i;
-  return v;
-}
-INLINE GEN
-identity_ZV(long n)
-{
-  GEN v = cgetg(n+1, t_VEC);
-  long i;
-  for (i = 1; i <= n; i++) gel(v,i) = utoipos(i);
-  return v;
-}
 /* identity permutation */
 INLINE GEN
-identity_perm(long n) { return identity_zv(n); }
+identity_perm(long n)
+{
+  GEN perm = cgetg(n+1, t_VECSMALL);
+  long i;
+  for (i = 1; i <= n; i++) perm[i] = i;
+  return perm;
+}
 
 /* assume d <= n */
 INLINE GEN
@@ -1109,13 +1015,14 @@ cyclic_perm(long n, long d)
 
 /* Multiply (compose) two permutations */
 INLINE GEN
-perm_mul(GEN s, GEN x)
-{ pari_APPLY_long(s[x[i]]) }
-
-INLINE GEN
-perm_sqr(GEN x)
-{ pari_APPLY_long(x[x[i]]) }
-
+perm_mul(GEN s, GEN t)
+{
+  GEN u;
+  long i, l = lg(t);
+  u = cgetg(l, t_VECSMALL);
+  for (i = 1; i < l; i++) u[i] = s[ t[i] ];
+  return u;
+}
 /* Compute the inverse (reciprocal) of a permutation. */
 INLINE GEN
 perm_inv(GEN x)
@@ -1133,6 +1040,32 @@ perm_conj(GEN s, GEN t)
   GEN v = cgetg_copy(s, &l);
   for (i = 1; i < l; i++) v[ s[i] ] = s[ t[i] ];
   return v;
+}
+
+/*********************************************************************/
+/*                       MALLOC/FREE WRAPPERS                        */
+/*********************************************************************/
+#define BLOCK_SIGALRM_START          \
+{                                    \
+  int block=PARI_SIGINT_block;       \
+  PARI_SIGINT_block = 2;             \
+  MT_SIGINT_BLOCK(block);
+
+#define BLOCK_SIGINT_START           \
+{                                    \
+  int block=PARI_SIGINT_block;       \
+  PARI_SIGINT_block = 1;             \
+  MT_SIGINT_BLOCK(block);
+
+#define BLOCK_SIGINT_END             \
+  PARI_SIGINT_block = block;         \
+  MT_SIGINT_UNBLOCK(block);          \
+  if (!block && PARI_SIGINT_pending) \
+  {                                  \
+    int sig = PARI_SIGINT_pending;   \
+    PARI_SIGINT_pending = 0;         \
+    raise(sig);                      \
+  }                                  \
 }
 
 INLINE void
@@ -1154,6 +1087,7 @@ pari_malloc(size_t size)
     if (!tmp) pari_err(e_MEM);
     return tmp;
   }
+  if (DEBUGMEM) pari_warn(warner,"mallocing NULL object");
   return NULL;
 }
 INLINE void*
@@ -1168,18 +1102,6 @@ pari_realloc(void *pointer, size_t size)
   if (!tmp) pari_err(e_MEM);
   return tmp;
 }
-INLINE void
-pari_realloc_ip(void **pointer, size_t size)
-{
-  char *tmp;
-  BLOCK_SIGINT_START;
-  if (!*pointer) tmp = (char *) malloc(size);
-  else tmp = (char *) realloc(*pointer,size);
-  if (!tmp) pari_err(e_MEM);
-  *pointer = tmp;
-  BLOCK_SIGINT_END;
-}
-
 INLINE void*
 pari_calloc(size_t size)
 {
@@ -1188,10 +1110,9 @@ pari_calloc(size_t size)
 }
 INLINE GEN
 cgetalloc(long t, size_t l)
-{ /* evallg may raise e_OVERFLOW, which would leak x */
-  ulong x0 = evaltyp(t) | evallg(l);
+{
   GEN x = (GEN)pari_malloc(l * sizeof(long));
-  x[0] = x0; return x;
+  x[0] = evaltyp(t) | evallg(l); return x;
 }
 
 /*******************************************************************/
@@ -1199,7 +1120,7 @@ cgetalloc(long t, size_t l)
 /*                       GARBAGE COLLECTION                        */
 /*                                                                 */
 /*******************************************************************/
-/* copy integer x as if we had set_avma(av) */
+/* copy integer x as if we had avma = av */
 INLINE GEN
 icopy_avma(GEN x, pari_sp av)
 {
@@ -1209,7 +1130,7 @@ icopy_avma(GEN x, pari_sp av)
   y[0] = evaltyp(t_INT)|evallg(lx);
   return y;
 }
-/* copy leaf x as if we had set_avma(av) */
+/* copy leaf x as if we had avma = av */
 INLINE GEN
 leafcopy_avma(GEN x, pari_sp av)
 {
@@ -1225,24 +1146,24 @@ gerepileuptoleaf(pari_sp av, GEN x)
   long lx;
   GEN q;
 
-  if (!isonstack(x) || (GEN)av<=x) return gc_const(av,x);
+  if (!isonstack(x) || (GEN)av<=x) { avma = av; return x; }
   lx = lg(x);
   q = ((GEN)av) - lx;
-  set_avma((pari_sp)q);
+  avma = (pari_sp)q;
   while (--lx >= 0) q[lx] = x[lx];
   return q;
 }
 INLINE GEN
 gerepileuptoint(pari_sp av, GEN x)
 {
-  if (!isonstack(x) || (GEN)av<=x) return gc_const(av,x);
-  set_avma((pari_sp)icopy_avma(x, av));
+  if (!isonstack(x) || (GEN)av<=x) { avma = av; return x; }
+  avma = (pari_sp)icopy_avma(x, av);
   return (GEN)avma;
 }
 INLINE GEN
 gerepileupto(pari_sp av, GEN x)
 {
-  if (!isonstack(x) || (GEN)av<=x) return gc_const(av,x);
+  if (!isonstack(x) || (GEN)av<=x) { avma = av; return x; }
   switch(typ(x))
   { /* non-default = !is_recursive_t(tq) */
     case t_INT: return gerepileuptoint(av, x);
@@ -1262,25 +1183,20 @@ gerepilecopy(pari_sp av, GEN x)
   if (is_recursive_t(typ(x)))
   {
     GENbin *p = copy_bin(x);
-    set_avma(av); return bin_copy(p);
+    avma = av; return bin_copy(p);
   }
   else
   {
-    set_avma(av);
+    avma = av;
     if (x < (GEN)av) {
       if (x < (GEN)pari_mainstack->bot) new_chunk(lg(x));
       x = leafcopy_avma(x, av);
-      set_avma((pari_sp)x);
+      avma = (pari_sp)x;
     } else
       x = leafcopy(x);
     return x;
   }
 }
-
-INLINE void
-guncloneNULL(GEN x) { if (x) gunclone(x); }
-INLINE void
-guncloneNULL_deep(GEN x) { if (x) gunclone_deep(x); }
 
 /* Takes an array of pointers to GENs, of length n. Copies all
  * objects to contiguous locations and cleans up the stack between
@@ -1290,7 +1206,7 @@ gerepilemany(pari_sp av, GEN* gptr[], int n)
 {
   int i;
   for (i=0; i<n; i++) *gptr[i] = (GEN)copy_bin(*gptr[i]);
-  set_avma(av);
+  avma = av;
   for (i=0; i<n; i++) *gptr[i] = bin_copy((GENbin*)*gptr[i]);
 }
 
@@ -1304,7 +1220,7 @@ gerepileall(pari_sp av, int n, ...)
     GEN *gptr[10];
     for (i=0; i<n; i++)
     { gptr[i] = va_arg(a,GEN*); *gptr[i] = (GEN)copy_bin(*gptr[i]); }
-    set_avma(av);
+    avma = av;
     for (--i; i>=0; i--) *gptr[i] = bin_copy((GENbin*)*gptr[i]);
 
   }
@@ -1313,7 +1229,7 @@ gerepileall(pari_sp av, int n, ...)
     GEN **gptr = (GEN**)  pari_malloc(n*sizeof(GEN*));
     for (i=0; i<n; i++)
     { gptr[i] = va_arg(a,GEN*); *gptr[i] = (GEN)copy_bin(*gptr[i]); }
-    set_avma(av);
+    avma = av;
     for (--i; i>=0; i--) *gptr[i] = bin_copy((GENbin*)*gptr[i]);
     pari_free(gptr);
   }
@@ -1325,7 +1241,7 @@ gerepilecoeffs(pari_sp av, GEN x, int n)
 {
   int i;
   for (i=0; i<n; i++) gel(x,i) = (GEN)copy_bin(gel(x,i));
-  set_avma(av);
+  avma = av;
   for (i=0; i<n; i++) gel(x,i) = bin_copy((GENbin*)x[i]);
 }
 
@@ -1352,7 +1268,7 @@ INLINE void
 cgiv(GEN x)
 {
   pari_sp av = (pari_sp)(x+lg(x));
-  if (isonstack((GEN)av)) set_avma(av);
+  if (isonstack((GEN)av)) avma = av;
 }
 
 INLINE void
@@ -1375,17 +1291,12 @@ cxcompotor(GEN z, long prec)
     case t_INT:  return itor(z, prec);
     case t_FRAC: return fractor(z, prec);
     case t_REAL: return rtor(z, prec);
-    default: pari_err_TYPE("cxcompotor",z);
-             return NULL; /* LCOV_EXCL_LINE */
+    default: pari_err_TYPE("cxcompotor",z); return NULL; /* not reached */
   }
 }
 INLINE GEN
 cxtofp(GEN x, long prec)
 { retmkcomplex(cxcompotor(gel(x,1),prec), cxcompotor(gel(x,2),prec)); }
-
-INLINE GEN
-cxtoreal(GEN q)
-{ return (typ(q) == t_COMPLEX && gequal0(gel(q,2)))? gel(q,1): q; }
 
 INLINE double
 gtodouble(GEN x)
@@ -1394,24 +1305,10 @@ gtodouble(GEN x)
     pari_sp av = avma;
     x = gtofp(x, DEFAULTPREC);
     if (typ(x)!=t_REAL) pari_err_TYPE("gtodouble [t_REAL expected]", x);
-    set_avma(av);
+    avma = av;
   }
   return rtodbl(x);
 }
-
-INLINE int
-gisdouble(GEN x, double *g)
-{
-  if (typ(x)!=t_REAL) {
-    pari_sp av = avma;
-    x = gtofp(x, DEFAULTPREC);
-    if (typ(x)!=t_REAL) pari_err_TYPE("gisdouble [t_REAL expected]", x);
-    set_avma(av);
-  }
-  if (expo(x) >= 0x3ff) return 0;
-  *g = rtodbl(x); return 1;
-}
-
 INLINE long
 gtos(GEN x) {
   if (typ(x) != t_INT) pari_err_TYPE("gtos [integer expected]",x);
@@ -1468,8 +1365,7 @@ gtofp(GEN z, long prec)
       return cxtofp(z, prec);
     }
     case t_QUAD: return quadtofp(z, prec);
-    default: pari_err_TYPE("gtofp",z);
-             return NULL; /* LCOV_EXCL_LINE */
+    default: pari_err_TYPE("gtofp",z); return NULL; /* not reached */
   }
 }
 /* Force z to be of type real / int */
@@ -1483,8 +1379,7 @@ gtomp(GEN z, long prec)
     case t_REAL: return rtor(z, prec);
     case t_QUAD: z = quadtofp(z, prec);
                  if (typ(z) == t_REAL) return z;
-    default: pari_err_TYPE("gtomp",z);
-             return NULL; /* LCOV_EXCL_LINE */
+    default: pari_err_TYPE("gtomp",z); return NULL; /* not reached */
   }
 }
 
@@ -1498,23 +1393,36 @@ RgX_gtofp(GEN x, long prec)
 }
 INLINE GEN
 RgC_gtofp(GEN x, long prec)
-{ pari_APPLY_type(t_COL, gtofp(gel(x,i), prec)) }
-
-INLINE GEN
-RgV_gtofp(GEN x, long prec)
-{ pari_APPLY_type(t_VEC, gtofp(gel(x,i), prec)) }
-
+{
+  long l = lg(x);
+  GEN y = cgetg(l, t_COL);
+  while (--l > 0) gel(y,l) = gtofp(gel(x,l), prec);
+  return y;
+}
 INLINE GEN
 RgM_gtofp(GEN x, long prec)
-{ pari_APPLY_same(RgC_gtofp(gel(x,i), prec)) }
-
+{
+  long l;
+  GEN y = cgetg_copy(x, &l);
+  while (--l > 0) gel(y,l) = RgC_gtofp(gel(x,l), prec);
+  return y;
+}
 INLINE GEN
 RgC_gtomp(GEN x, long prec)
-{ pari_APPLY_type(t_COL, gtomp(gel(x,i), prec)) }
-
+{
+  long l = lg(x);
+  GEN y = cgetg(l, t_COL);
+  while (--l > 0) gel(y,l) = gtomp(gel(x,l), prec);
+  return y;
+}
 INLINE GEN
 RgM_gtomp(GEN x, long prec)
-{ pari_APPLY_same(RgC_gtomp(gel(x,i), prec)) }
+{
+  long l;
+  GEN y = cgetg_copy(x, &l);
+  while (--l > 0) gel(y,l) = RgC_gtomp(gel(x,l), prec);
+  return y;
+}
 
 INLINE GEN
 RgX_fpnorml2(GEN x, long prec)
@@ -1544,7 +1452,7 @@ affgr(GEN x, GEN y)
     case t_INT:  affir(x,y); break;
     case t_REAL: affrr(x,y); break;
     case t_FRAC: rdiviiz(gel(x,1),gel(x,2), y); break;
-    case t_QUAD: av = avma; affgr(quadtofp(x,realprec(y)), y); set_avma(av); break;
+    case t_QUAD: av = avma; affgr(quadtofp(x,realprec(y)), y); avma = av; break;
     default: pari_err_TYPE2("=",x,y);
   }
 }
@@ -1559,7 +1467,7 @@ affc_fixlg(GEN x, GEN res)
   }
   else
   {
-    set_avma((pari_sp)(res+3));
+    avma = (pari_sp)(res+3);
     res = cgetr(realprec(gel(res,1)));
     affrr_fixlg(x, res);
   }
@@ -1648,8 +1556,8 @@ Fp_add(GEN a, GEN b, GEN m)
   {
     GEN t = subii(p, m);
     s = signe(t);
-    if (!s) return gc_const(av, gen_0);
-    if (s < 0) return gc_const((pari_sp)p, p);
+    if (!s) { avma = av; return gen_0; }
+    if (s < 0) { avma = (pari_sp)p; return p; }
     if (cmpii(t, m) < 0) return gerepileuptoint(av, t); /* general case ! */
     p = remii(t, m);
   }
@@ -1672,7 +1580,7 @@ Fp_sub(GEN a, GEN b, GEN m)
   else
   {
     GEN t = addii(p, m);
-    if (!s) return gc_const(av, gen_0);
+    if (!s) { avma = av; return gen_0; }
     if (s > 0) return gerepileuptoint(av, t); /* general case ! */
     p = modii(t, m);
   }
@@ -1706,10 +1614,6 @@ Fp_halve(GEN a, GEN p)
 INLINE GEN
 Fp_center(GEN u, GEN p, GEN ps2)
 { return abscmpii(u,ps2)<=0? icopy(u): subii(u,p); }
-/* same without copy */
-INLINE GEN
-Fp_center_i(GEN u, GEN p, GEN ps2)
-{ return abscmpii(u,ps2)<=0? u: subii(u,p); }
 
 /* x + y*z mod p */
 INLINE GEN
@@ -1729,7 +1633,7 @@ Fp_mul(GEN a, GEN b, GEN m)
   GEN p; /*HACK: assume modii use <=lg(p)+(lg(m)<<1) space*/
   (void)new_chunk(lg(a)+lg(b)+(lg(m)<<1));
   p = mulii(a,b);
-  set_avma(av); return modii(p,m);
+  avma = av; return modii(p,m);
 }
 INLINE GEN
 Fp_sqr(GEN a, GEN m)
@@ -1738,7 +1642,7 @@ Fp_sqr(GEN a, GEN m)
   GEN p; /*HACK: assume modii use <=lg(p)+(lg(m)<<1) space*/
   (void)new_chunk((lg(a)+lg(m))<<1);
   p = sqri(a);
-  set_avma(av); return remii(p,m); /*Use remii: p >= 0 */
+  avma = av; return modii(p,m);
 }
 INLINE GEN
 Fp_mulu(GEN a, ulong b, GEN m)
@@ -1753,7 +1657,7 @@ Fp_mulu(GEN a, ulong b, GEN m)
     GEN p; /*HACK: assume modii use <=lg(p)+(lg(m)<<1) space*/
     (void)new_chunk(lg(a)+1+(l<<1));
     p = muliu(a,b);
-    set_avma(av); return modii(p,m);
+    avma = av; return modii(p,m);
   }
 }
 INLINE GEN
@@ -1775,7 +1679,7 @@ Fp_muls(GEN a, long b, GEN m)
     GEN p; /*HACK: assume modii use <=lg(p)+(lg(m)<<1) space*/
     (void)new_chunk(lg(a)+1+(l<<1));
     p = mulis(a,b);
-    set_avma(av); return modii(p,m);
+    avma = av; return modii(p,m);
   }
 }
 
@@ -1796,90 +1700,15 @@ Fp_invsafe(GEN a, GEN m)
 INLINE GEN
 Fp_div(GEN a, GEN b, GEN m)
 {
-  pari_sp av = avma;
-  GEN p;
-  if (lgefint(b) == 3)
-  {
-    a = Fp_divu(a, b[2], m);
-    if (signe(b) < 0) a = Fp_neg(a, m);
-    return a;
-  }
-  /*HACK: assume modii use <=lg(p)+(lg(m)<<1) space*/
+  pari_sp av=avma;
+  GEN p; /*HACK: assume modii use <=lg(p)+(lg(m)<<1) space*/
   (void)new_chunk(lg(a)+(lg(m)<<1));
   p = mulii(a, Fp_inv(b,m));
-  set_avma(av); return modii(p,m);
-}
-INLINE GEN
-Fp_divu(GEN x, ulong a, GEN p)
-{
-  pari_sp av = avma;
-  ulong b;
-  if (lgefint(p) == 3)
-  {
-    ulong pp = p[2], xp = umodiu(x, pp);
-    return xp? utoipos(Fl_div(xp, a % pp, pp)): gen_0;
-  }
-  x = Fp_red(x, p);
-  b = Fl_neg(Fl_div(umodiu(x,a), umodiu(p,a), a), a); /* x + pb = 0 (mod a) */
-  return gerepileuptoint(av, diviuexact(addmuliu(x, p, b), a));
+  avma = av; return modii(p,m);
 }
 
 INLINE GEN
 Flx_mulu(GEN x, ulong a, ulong p) { return Flx_Fl_mul(x,a%p,p); }
-
-INLINE GEN
-get_F2x_mod(GEN T) { return typ(T)==t_VEC? gel(T,2): T; }
-
-INLINE long
-get_F2x_var(GEN T) { return typ(T)==t_VEC? mael(T,2,1): T[1]; }
-
-INLINE long
-get_F2x_degree(GEN T) { return typ(T)==t_VEC? F2x_degree(gel(T,2)): F2x_degree(T); }
-
-INLINE GEN
-get_F2xqX_mod(GEN T) { return typ(T)==t_VEC? gel(T,2): T; }
-
-INLINE long
-get_F2xqX_var(GEN T) { return typ(T)==t_VEC? varn(gel(T,2)): varn(T); }
-
-INLINE long
-get_F2xqX_degree(GEN T) { return typ(T)==t_VEC? degpol(gel(T,2)): degpol(T); }
-
-INLINE GEN
-get_Flx_mod(GEN T) { return typ(T)==t_VEC? gel(T,2): T; }
-
-INLINE long
-get_Flx_var(GEN T) { return typ(T)==t_VEC? mael(T,2,1): T[1]; }
-
-INLINE long
-get_Flx_degree(GEN T) { return typ(T)==t_VEC? degpol(gel(T,2)): degpol(T); }
-
-INLINE GEN
-get_FlxqX_mod(GEN T) { return typ(T)==t_VEC? gel(T,2): T; }
-
-INLINE long
-get_FlxqX_var(GEN T) { return typ(T)==t_VEC? varn(gel(T,2)): varn(T); }
-
-INLINE long
-get_FlxqX_degree(GEN T) { return typ(T)==t_VEC? degpol(gel(T,2)): degpol(T); }
-
-INLINE GEN
-get_FpX_mod(GEN T) { return typ(T)==t_VEC? gel(T,2): T; }
-
-INLINE long
-get_FpX_var(GEN T) { return typ(T)==t_VEC? varn(gel(T,2)): varn(T); }
-
-INLINE long
-get_FpX_degree(GEN T) { return typ(T)==t_VEC? degpol(gel(T,2)): degpol(T); }
-
-INLINE GEN
-get_FpXQX_mod(GEN T) { return typ(T)==t_VEC? gel(T,2): T; }
-
-INLINE long
-get_FpXQX_var(GEN T) { return typ(T)==t_VEC? varn(gel(T,2)): varn(T); }
-
-INLINE long
-get_FpXQX_degree(GEN T) { return typ(T)==t_VEC? degpol(gel(T,2)): degpol(T); }
 
 /*******************************************************************/
 /*                                                                 */
@@ -1899,7 +1728,7 @@ submulii(GEN x, GEN y, GEN z)
   lz = lgefint(z);
   av = avma; (void)new_chunk(lx+ly+lz); /* HACK */
   t = mulii(z, y);
-  set_avma(av); return subii(x,t);
+  avma = av; return subii(x,t);
 }
 /* y*z - x */
 INLINE GEN
@@ -1914,7 +1743,7 @@ mulsubii(GEN y, GEN z, GEN x)
   lz = lgefint(z);
   av = avma; (void)new_chunk(lx+ly+lz); /* HACK */
   t = mulii(z, y);
-  set_avma(av); return subii(t,x);
+  avma = av; return subii(t,x);
 }
 
 /* x - u*y */
@@ -1927,7 +1756,7 @@ submuliu(GEN x, GEN y, ulong u)
   av = avma;
   (void)new_chunk(3+ly+lgefint(x)); /* HACK */
   y = mului(u,y);
-  set_avma(av); return subii(x, y);
+  avma = av; return subii(x, y);
 }
 /* x + u*y */
 INLINE GEN
@@ -1939,7 +1768,7 @@ addmuliu(GEN x, GEN y, ulong u)
   av = avma;
   (void)new_chunk(3+ly+lgefint(x)); /* HACK */
   y = mului(u,y);
-  set_avma(av); return addii(x, y);
+  avma = av; return addii(x, y);
 }
 /* x - u*y */
 INLINE GEN
@@ -1951,7 +1780,7 @@ submuliu_inplace(GEN x, GEN y, ulong u)
   av = avma;
   (void)new_chunk(3+ly+lgefint(x)); /* HACK */
   y = mului(u,y);
-  set_avma(av); return subii(x, y);
+  avma = av; return subii(x, y);
 }
 /* x + u*y */
 INLINE GEN
@@ -1963,7 +1792,7 @@ addmuliu_inplace(GEN x, GEN y, ulong u)
   av = avma;
   (void)new_chunk(3+ly+lgefint(x)); /* HACK */
   y = mului(u,y);
-  set_avma(av); return addii(x, y);
+  avma = av; return addii(x, y);
 }
 /* ux + vy */
 INLINE GEN
@@ -1978,7 +1807,7 @@ lincombii(GEN u, GEN v, GEN x, GEN y)
   av = avma; (void)new_chunk(lx+ly+lgefint(u)+lgefint(v)); /* HACK */
   p1 = mulii(u,x);
   p2 = mulii(v,y);
-  set_avma(av); return addii(p1,p2);
+  avma = av; return addii(p1,p2);
 }
 
 /*******************************************************************/
@@ -1999,8 +1828,6 @@ INLINE int
 is_noncalc_t(long tx) { return (tx) >= t_LIST; }
 INLINE int
 is_rational_t(long t) { return (t == t_INT || t == t_FRAC); }
-INLINE int
-is_qfb_t(long t) { return (t == t_QFI || t == t_QFR); }
 INLINE int
 is_real_t(long t) { return (t == t_INT || t == t_REAL || t == t_FRAC); }
 INLINE int
@@ -2023,8 +1850,6 @@ sqrtr(GEN x) {
   retmkcomplex(gen_0, sqrtr_abs(x));
 }
 INLINE GEN
-cbrtr_abs(GEN x) { return sqrtnr_abs(x, 3); }
-INLINE GEN
 cbrtr(GEN x) {
   long s = signe(x);
   GEN r;
@@ -2033,31 +1858,19 @@ cbrtr(GEN x) {
   if (s < 0) togglesign(r);
   return r;
 }
+/* x^(1/n) */
 INLINE GEN
 sqrtnr(GEN x, long n) {
-  long s = signe(x);
-  GEN r;
-  if (s == 0) return real_0_bit(expo(x) / n);
-  r = sqrtnr_abs(x, n);
-  if (s < 0) pari_err_IMPL("sqrtnr for x < 0");
-  return r;
+  switch(n)
+  {
+    case 1: return rcopy(x);
+    case 2: return sqrtr(x);
+    case 3: return cbrtr(x);
+  }
+  return mpexp(divrs(mplog(x), n));
 }
 INLINE long
 logint(GEN B, GEN y) { return logintall(B,y,NULL); }
-INLINE ulong
-ulogint(ulong B, ulong y)
-{
-  ulong r;
-  long e;
-  if (y == 2) return expu(B);
-  r = y;
-  for (e=1;; e++)
-  { /* here, r = y^e, r2 = y^(e-1) */
-    if (r >= B) return r == B? e: e-1;
-    r = umuluu_or_0(y, r);
-    if (!r) return e;
-  }
-}
 
 /*******************************************************************/
 /*                                                                 */
@@ -2099,15 +1912,6 @@ mul_content(GEN cx, GEN cy)
   return gmul(cx,cy);
 }
 INLINE GEN
-inv_content(GEN c) { return c? ginv(c): NULL; }
-INLINE GEN
-div_content(GEN cx, GEN cy)
-{
-  if (!cy) return cx;
-  if (!cx) return ginv(cy);
-  return gdiv(cx,cy);
-}
-INLINE GEN
 mul_denom(GEN dx, GEN dy)
 {
   if (!dx) return dy;
@@ -2122,8 +1926,6 @@ INLINE GEN
 leading_coeff(GEN x) { return lg(x) == 2? gen_0: gel(x,lg(x)-1); }
 INLINE ulong
 Flx_lead(GEN x) { return lg(x) == 2? 0: x[lg(x)-1]; }
-INLINE ulong
-Flx_constant(GEN x) { return lg(x) == 2? 0: x[2]; }
 INLINE long
 degpol(GEN x) { return lg(x)-3; }
 INLINE long
@@ -2133,7 +1935,12 @@ lgcols(GEN x) { return lg(gel(x,1)); }
 INLINE long
 nbrows(GEN x) { return lg(gel(x,1))-1; }
 INLINE GEN
-truecoef(GEN x, long n) { return polcoef(x,n,-1); }
+truecoeff(GEN x, long n) { return polcoeff0(x,n,-1); }
+
+INLINE GEN
+RgXQ_mul(GEN y, GEN x, GEN T) { return RgX_rem(RgX_mul(y, x), T); }
+INLINE GEN
+RgXQ_sqr(GEN x, GEN T) { return RgX_rem(RgX_sqr(x), T); }
 
 INLINE GEN
 ZXQ_mul(GEN y, GEN x, GEN T) { return ZX_rem(ZX_mul(y, x), T); }
@@ -2160,6 +1967,8 @@ INLINE GEN
 RgX_renormalize(GEN x) { return RgX_renormalize_lg(x, lg(x)); }
 INLINE GEN
 RgX_div(GEN x, GEN y) { return RgX_divrem(x,y,NULL); }
+INLINE GEN
+RgX_rem(GEN x, GEN y) { return RgX_divrem(x,y,ONLY_REM); }
 INLINE GEN
 RgXQX_div(GEN x, GEN y, GEN T) { return RgXQX_divrem(x,y,T,NULL); }
 INLINE GEN
@@ -2212,8 +2021,6 @@ INLINE int
 Flx_equal1(GEN x) { return degpol(x)==0 && x[2] == 1; }
 INLINE int
 ZX_equal1(GEN x) { return degpol(x)==0 && equali1(gel(x,2)); }
-INLINE int
-ZX_is_monic(GEN x) { return equali1(leading_coeff(x)); }
 
 INLINE GEN
 ZX_renormalize(GEN x, long lx)    { return ZXX_renormalize(x,lx); }
@@ -2231,12 +2038,19 @@ F2v_to_F2x(GEN x, long sv) {
   y[1] = sv; F2x_renormalize(y, lg(y)); return y;
 }
 
+INLINE GEN
+ZX_ZXY_resultant(GEN a, GEN b) { return ZX_ZXY_rnfequation(a,b,NULL); }
 INLINE long
 sturm(GEN x) { return sturmpart(x, NULL, NULL); }
+INLINE GEN
+resultant(GEN x, GEN y) { return resultant_all(x,y,NULL); }
 
 INLINE long
-gval(GEN x, long v)
-{ pari_sp av = avma; return gc_long(av, gvaluation(x, pol_x(v))); }
+gval(GEN x, long v) {
+  pari_sp av = avma;
+  long n = gvaluation(x, pol_x(v));
+  avma = av; return n;
+}
 
 INLINE void
 RgX_shift_inplace_init(long v)
@@ -2246,20 +2060,18 @@ INLINE GEN
 RgX_shift_inplace(GEN x, long v)
 {
   long i, lx;
-  GEN z;
+  GEN y, z;
   if (!v) return x;
   lx = lg(x);
   if (lx == 2) return x;
+  y = x + v;
   z = x + lx;
-  /* stackdummy's from normalizepol */
-  while (lg(z) != v) z += lg(z);
-  z += v;
-  for (i = lx-1; i >= 2; i--) gel(--z,0) = gel(x,i);
-  for (i = 0;  i < v; i++) gel(--z,0) = gen_0;
-  z -= 2;
-  z[1] = x[1];
-  z[0] = evaltyp(t_POL) | evallg(lx+v);
-  stackdummy((pari_sp)z, (pari_sp)x); return z;
+  /* stackdummy from normalizepol: move it up */
+  if (lg(z) != v) x[lx + v] = z[0];
+  for (i = lx-1; i >= 2; i--) gel(y,i) = gel(x,i);
+  for (i = v+1;  i >= 2; i--) gel(x,i) = gen_0;
+  /* leave x[1] alone: it is correct */
+  x[0] = evaltyp(t_POL) | evallg(lx+v); return x;
 }
 
 
@@ -2298,6 +2110,8 @@ ZM_lll(GEN x, double D, long f) { return ZM_lll_norms(x,D,f,NULL); }
 INLINE void
 RgM_dimensions(GEN x, long *m, long *n) { *n = lg(x)-1; *m = *n? nbrows(x): 0; }
 INLINE GEN
+RgM_inv(GEN a) { return RgM_solve(a, NULL); }
+INLINE GEN
 RgM_shallowcopy(GEN x)
 {
   long l;
@@ -2332,8 +2146,6 @@ Fq_to_FpXQ(GEN x, GEN T, GEN p /*unused*/)
   (void) p;
   return typ(x)==t_INT ? scalarpol(x, get_FpX_var(T)): x;
 }
-INLINE GEN
-Rg_to_Fq(GEN x, GEN T, GEN p) { return T? Rg_to_FpXQ(x,T,p): Rg_to_Fp(x,p); }
 
 INLINE GEN
 gener_Fq_local(GEN T, GEN p, GEN L)
@@ -2347,10 +2159,6 @@ INLINE GEN
 FlxqX_div(GEN x, GEN y, GEN T, ulong p) { return FlxqX_divrem(x, y, T, p, NULL); }
 INLINE GEN
 F2xqX_div(GEN x, GEN y, GEN T) { return F2xqX_divrem(x, y, T, NULL); }
-
-INLINE GEN
-FpXY_Fq_evaly(GEN Q, GEN y, GEN T, GEN p, long vx)
-{ return T ? FpXY_FpXQ_evaly(Q, y, T, p, vx): FpXY_evaly(Q, y, p, vx); }
 
 /* FqX */
 INLINE GEN
@@ -2380,9 +2188,6 @@ INLINE GEN
 FqX_powu(GEN x, ulong n, GEN T, GEN p)
 { return T? FpXQX_powu(x, n, T, p): FpX_powu(x, n, p); }
 INLINE GEN
-FqX_halve(GEN x, GEN T, GEN p)
-{ return T? FpXX_halve(x, p): FpX_halve(x, p); }
-INLINE GEN
 FqX_div(GEN x, GEN y, GEN T, GEN p)
 { return T? FpXQX_divrem(x,y,T,p,NULL): FpX_divrem(x,y,p,NULL); }
 INLINE GEN
@@ -2407,30 +2212,13 @@ INLINE GEN
 FqX_extgcd(GEN P,GEN Q,GEN T,GEN p, GEN *U, GEN *V)
 { return T? FpXQX_extgcd(P,Q,T,p,U,V): FpX_extgcd(P,Q,p,U,V); }
 INLINE GEN
-FqX_normalize(GEN z, GEN T, GEN p)
-{ return T? FpXQX_normalize(z, T, p): FpX_normalize(z, p); }
+FqX_normalize(GEN z, GEN T, GEN p) { return T? FpXQX_normalize(z, T, p): FpX_normalize(z, p); }
 INLINE GEN
-FqX_deriv(GEN f, GEN T, GEN p) { return T? FpXX_deriv(f, p): FpX_deriv(f, p); }
+FqX_deriv(GEN f, /*unused*/GEN T, GEN p) { (void)T; return FpXX_deriv(f, p); }
 INLINE GEN
-FqX_integ(GEN f, GEN T, GEN p) { return T? FpXX_integ(f, p): FpX_integ(f, p); }
+FqX_factor(GEN f, GEN T, GEN p) { return T?FpXQX_factor(f, T, p): FpX_factor(f, p); }
 INLINE GEN
-FqX_factor(GEN f, GEN T, GEN p)
-{ return T?FpXQX_factor(f, T, p): FpX_factor(f, p); }
-INLINE GEN
-FqX_factor_squarefree(GEN f, GEN T, GEN p)
-{ return T ? FpXQX_factor_squarefree(f, T, p): FpX_factor_squarefree(f, p); }
-INLINE GEN
-FqX_ddf(GEN f, GEN T, GEN p)
-{ return T ? FpXQX_ddf(f, T, p): FpX_ddf(f, p); }
-INLINE GEN
-FqX_degfact(GEN f, GEN T, GEN p)
-{ return T?FpXQX_degfact(f, T, p): FpX_degfact(f, p); }
-INLINE GEN
-FqX_roots(GEN f, GEN T, GEN p)
-{ return T?FpXQX_roots(f, T, p): FpX_roots(f, p); }
-INLINE GEN
-FqX_to_mod(GEN f, GEN T, GEN p)
-{ return T?FpXQX_to_mod(f, T, p): FpX_to_mod(f, p); }
+FqX_roots(GEN f, GEN T, GEN p) { return T?FpXQX_roots(f, T, p): FpX_roots(f, p); }
 
 /*FqXQ*/
 INLINE GEN
@@ -2457,23 +2245,6 @@ FqXQ_sqr(GEN x, GEN S, GEN T, GEN p)
 INLINE GEN
 FqXQ_pow(GEN x, GEN n, GEN S, GEN T, GEN p)
 { return T? FpXQXQ_pow(x,n,S,T,p): FpXQ_pow(x,n,S,p); }
-
-/*FqXn*/
-INLINE GEN
-FqXn_expint(GEN x, long n, GEN T, GEN p)
-{ return T? FpXQXn_expint(x,n,T,p): FpXn_expint(x,n,p); }
-INLINE GEN
-FqXn_exp(GEN x, long n, GEN T, GEN p)
-{ return T? FpXQXn_exp(x,n,T,p): FpXn_exp(x,n,p); }
-INLINE GEN
-FqXn_inv(GEN x, long n, GEN T, GEN p)
-{ return T? FpXQXn_inv(x,n,T,p): FpXn_inv(x,n,p); }
-INLINE GEN
-FqXn_mul(GEN x, GEN y, long n, GEN T, GEN p)
-{ return T? FpXQXn_mul(x, y, n, T, p): FpXn_mul(x, y, n, p); }
-INLINE GEN
-FqXn_sqr(GEN x, long n, GEN T, GEN p)
-{ return T? FpXQXn_sqr(x,n,T,p): FpXn_sqr(x,n,p); }
 
 /*FpXQ*/
 INLINE GEN
@@ -2575,11 +2346,6 @@ gsubgs(GEN y, long s) { return gaddgs(y, -s); }
 INLINE GEN
 gdivsg(long s, GEN y) { return gdiv(stoi(s), y); }
 
-INLINE GEN
-gmax_shallow(GEN x, GEN y) { return gcmp(x,y)<0? y: x; }
-INLINE GEN
-gmin_shallow(GEN x, GEN y) { return gcmp(x,y)<0? x: y; }
-
 /* x t_COMPLEX */
 INLINE GEN
 cxnorm(GEN x) { return gadd(gsqr(gel(x,1)), gsqr(gel(x,2))); }
@@ -2604,9 +2370,13 @@ quadnorm(GEN q)
 INLINE GEN
 quad_disc(GEN x)
 {
-  GEN Q = gel(x,1), b = gel(Q,3), c = gel(Q,2), c4 = shifti(c,2);
-  if (is_pm1(b)) return subsi(1, c4);
-  togglesign_safe(&c4); return c4;
+  GEN Q = gel(x,1), b = gel(Q,3), c = gel(Q,2), c4;
+  if (is_pm1(b))
+  {
+    pari_sp av = avma; (void)new_chunk(lgefint(c) + 1);
+    c4 = shifti(c,2); avma = av; return subsi(1, c4);
+  }
+  c4 = shifti(c,2); togglesign_safe(&c4); return c4;
 }
 INLINE GEN
 qfb_disc3(GEN x, GEN y, GEN z) { return subii(sqri(y), shifti(mulii(x,z),2)); }
@@ -2659,33 +2429,33 @@ powIs(long n) {
 /*                                                                 */
 /*******************************************************************/
 INLINE void mpexpz(GEN x, GEN z)
-{ pari_sp av = avma; gaffect(mpexp(x), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(mpexp(x), z); avma = av; }
 INLINE void mplogz(GEN x, GEN z)
-{ pari_sp av = avma; gaffect(mplog(x), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(mplog(x), z); avma = av; }
 INLINE void mpcosz(GEN x, GEN z)
-{ pari_sp av = avma; gaffect(mpcos(x), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(mpcos(x), z); avma = av; }
 INLINE void mpsinz(GEN x, GEN z)
-{ pari_sp av = avma; gaffect(mpsin(x), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(mpsin(x), z); avma = av; }
 INLINE void gnegz(GEN x, GEN z)
-{ pari_sp av = avma; gaffect(gneg(x), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gneg(x), z); avma = av; }
 INLINE void gabsz(GEN x, long prec, GEN z)
-{ pari_sp av = avma; gaffect(gabs(x,prec), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gabs(x,prec), z); avma = av; }
 INLINE void gaddz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; gaffect(gadd(x,y), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gadd(x,y), z); avma = av; }
 INLINE void gsubz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; gaffect(gsub(x,y), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gsub(x,y), z); avma = av; }
 INLINE void gmulz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; gaffect(gmul(x,y), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gmul(x,y), z); avma = av; }
 INLINE void gdivz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; gaffect(gdiv(x,y), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gdiv(x,y), z); avma = av; }
 INLINE void gdiventz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; gaffect(gdivent(x,y), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gdivent(x,y), z); avma = av; }
 INLINE void gmodz(GEN x, GEN y, GEN z)
-{ pari_sp av = avma; gaffect(gmod(x,y), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gmod(x,y), z); avma = av; }
 INLINE void gmul2nz(GEN x, long s, GEN z)
-{ pari_sp av = avma; gaffect(gmul2n(x,s), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gmul2n(x,s), z); avma = av; }
 INLINE void gshiftz(GEN x, long s, GEN z)
-{ pari_sp av = avma; gaffect(gshift(x,s), z); set_avma(av); }
+{ pari_sp av = avma; gaffect(gshift(x,s), z); avma = av; }
 
 /*******************************************************************/
 /*                                                                 */
@@ -2716,7 +2486,6 @@ INLINE long ellR_get_sign(GEN x) { return mael3(x, 15, 1, 2); }
 INLINE GEN ellnf_get_nf(GEN x) { return checknf_i(gmael(x,15,1)); }
 INLINE GEN ellnf_get_bnf(GEN x) { return checkbnf_i(gmael(x,15,1)); }
 
-INLINE int checkell_i(GEN e) { return typ(e) == t_VEC && lg(e) == 17; }
 INLINE int ell_is_inf(GEN z) { return lg(z) == 2; }
 INLINE GEN ellinf(void) { return mkvec(gen_0); }
 
@@ -2736,7 +2505,7 @@ INLINE long pr_get_e(GEN pr) { return gel(pr,3)[2]; }
 INLINE long pr_get_f(GEN pr) { return gel(pr,4)[2]; }
 INLINE GEN pr_get_tau(GEN pr){ return gel(pr,5); }
 INLINE int
-pr_is_inert(GEN P) { return typ(pr_get_tau(P)) == t_INT; }
+pr_is_inert(GEN P) { return pr_get_f(P) == lg(pr_get_gen(P))-1; }
 INLINE GEN
 pr_norm(GEN pr) { return powiu(pr_get_p(pr), pr_get_f(pr)); }
 INLINE ulong
@@ -2772,30 +2541,7 @@ nf_get_ramified_primes(GEN nf) { return gmael(nf,5,8); }
 INLINE GEN
 nf_get_roots(GEN nf) { return gel(nf,6); }
 INLINE GEN
-nf_get_zk(GEN nf)
-{
-  GEN y = gel(nf,7), D = gel(y, 1);
-  if (typ(D) == t_POL) D = gel(D, 2);
-  if (!equali1(D)) y = gdiv(y, D);
-  return y;
-}
-INLINE GEN
-nf_get_zkprimpart(GEN nf)
-{
-  GEN y = gel(nf,7);
-  /* test for old format of nf.zk: non normalized */
-  if (!equali1(gel(nf,4)) && gequal1(gel(y,1))) y = Q_remove_denom(y,NULL);
-  return y;
-}
-INLINE GEN
-nf_get_zkden(GEN nf)
-{
-  GEN y = gel(nf,7), D = gel(y,1);
-  if (typ(D) == t_POL) D = gel(D,2);
-  /* test for old format of nf.zk: non normalized */
-  if (!equali1(gel(nf,4)) && equali1(D)) D = Q_denom(y);
-  return D;
-}
+nf_get_zk(GEN nf) { return gel(nf,7); }
 INLINE GEN
 nf_get_invzk(GEN nf) { return gel(nf,8); }
 INLINE void
@@ -2806,8 +2552,6 @@ nf_get_sign(GEN nf, long *r1, long *r2)
   *r2 = itou(gel(x,2));
 }
 
-INLINE GEN
-cyc_get_expo(GEN c) { return lg(c) == 1? gen_1: gel(c,1); }
 INLINE GEN
 abgrp_get_no(GEN x) { return gel(x,1); }
 INLINE GEN
@@ -2829,23 +2573,17 @@ bnf_get_reg(GEN bnf) { return gmael(bnf,8,2); }
 INLINE GEN
 bnf_get_logfu(GEN bnf) { return gel(bnf,3); }
 INLINE GEN
-bnf_get_sunits(GEN bnf)
-{ GEN s = gmael(bnf,8,3); return typ(s) == t_INT? NULL: s; }
-INLINE GEN
 bnf_get_tuU(GEN bnf) { return gmael3(bnf,8,4,2); }
 INLINE long
 bnf_get_tuN(GEN bnf) { return gmael3(bnf,8,4,1)[2]; }
 INLINE GEN
-bnf_get_fu_nocheck(GEN bnf) { return gmael(bnf,8,5); }
-INLINE GEN
 bnf_get_fu(GEN bnf) {
-  GEN fu = bnf_build_units(bnf), nf = bnf_get_nf(bnf);
-  long i, l;
+  GEN fu = bnf_get_fu_nocheck(bnf);
   if (typ(fu) == t_MAT) pari_err(e_MISC,"missing units in bnf");
-  l = lg(fu)-1; fu = vecslice(fu, 2, l);
-  for (i = 1; i < l; i++) gel(fu,i) = nf_to_scalar_or_alg(nf, gel(fu,i));
   return fu;
 }
+INLINE GEN
+bnf_get_fu_nocheck(GEN bnf) { return gmael(bnf,8,5); }
 
 INLINE GEN
 bnr_get_bnf(GEN bnr) { return gel(bnr,1); }
@@ -2880,15 +2618,15 @@ bid_get_arch(GEN bid) { return gmael(bid,1,2); }
 INLINE GEN
 bid_get_grp(GEN bid) { return gel(bid,2); }
 INLINE GEN
-bid_get_fact(GEN bid) { return gmael(bid,3,1); }
-INLINE GEN
-bid_get_fact2(GEN bid) { return gmael(bid,3,2); }
+bid_get_fact(GEN bid) { return gel(bid,3); }
 INLINE GEN
 bid_get_sprk(GEN bid) { return gmael(bid,4,1); }
 INLINE GEN
 bid_get_sarch(GEN bid) { return gmael(bid,4,2); }
 INLINE GEN
-bid_get_archp(GEN bid) { return gmael3(bid,4,2,2); }
+bid_get_archp(GEN bid) { return gmael3(bid,4,2,4); }
+INLINE GEN
+bid_get_ind(GEN bid) { return gmael(bid,4,3); }
 INLINE GEN
 bid_get_U(GEN bid) { return gel(bid,5); }
 INLINE GEN
@@ -2903,27 +2641,6 @@ bid_get_gen(GEN bid) {
   if (lg(G) != 4) pari_err(e_MISC,"missing bid generators. Use idealstar(,,2)");
   return abgrp_get_gen(G);
 }
-
-INLINE GEN
-znstar_get_N(GEN G) { return gmael(G,1,1); }
-INLINE GEN
-znstar_get_faN(GEN G) { return gel(G,3); }
-INLINE GEN
-znstar_get_no(GEN G) { return abgrp_get_no(gel(G,2)); }
-INLINE GEN
-znstar_get_cyc(GEN G) { return abgrp_get_cyc(gel(G,2)); }
-INLINE GEN
-znstar_get_gen(GEN G) { return abgrp_get_gen(gel(G,2)); }
-INLINE GEN
-znstar_get_conreycyc(GEN G) { return gmael(G,4,5); }
-INLINE GEN
-znstar_get_conreygen(GEN G) { return gmael(G,4,4); }
-INLINE GEN
-znstar_get_Ui(GEN G) { return gmael(G,4,3); }
-INLINE GEN
-znstar_get_U(GEN G) { return gel(G,5); }
-INLINE GEN
-znstar_get_pe(GEN G) { return gmael(G,4,1); }
 INLINE GEN
 gal_get_pol(GEN gal) { return gel(gal,1); }
 INLINE GEN
@@ -2960,8 +2677,8 @@ INLINE GEN
 rnf_get_alpha(GEN rnf) { return gmael(rnf, 11, 2); }
 INLINE GEN
 rnf_get_nf(GEN rnf) { return gel(rnf,10); }
-INLINE GEN
-rnf_get_nfzk(GEN rnf) { return gel(rnf,2); }
+INLINE void
+rnf_get_nfzk(GEN rnf, GEN *b, GEN *cb) {*b=gmael(rnf,2,1); *cb=gmael(rnf,2,2);}
 INLINE GEN
 rnf_get_polabs(GEN rnf) { return gmael(rnf,11,1); }
 INLINE GEN
@@ -2970,8 +2687,6 @@ INLINE GEN
 rnf_get_disc(GEN rnf) { return gel(rnf,3); }
 INLINE GEN
 rnf_get_index(GEN rnf) { return gel(rnf,4); }
-INLINE GEN
-rnf_get_ramified_primes(GEN rnf) { return gel(rnf,5); }
 INLINE long
 rnf_get_varn(GEN rnf) { return varn(gel(rnf,1)); }
 INLINE GEN
@@ -2991,14 +2706,15 @@ INLINE GEN
 idealpseudored(GEN I, GEN G)
 { return ZM_mul(I, ZM_lll(ZM_mul(G, I), 0.99, LLL_IM)); }
 
-/* Same I, G; m in I with T2(m) small */
+/* I integral (not necessarily HNF), G ZM, rounded Cholesky form of a weighted
+ * T2 matrix. Return m in I with T2(m) small */
 INLINE GEN
 idealpseudomin(GEN I, GEN G)
 {
   GEN u = ZM_lll(ZM_mul(G, I), 0.99, LLL_IM);
   return ZM_ZC_mul(I, gel(u,1));
 }
-/* Same I,G; irrational m in I with T2(m) small */
+/* I, G as in idealpseudomin. Return an irrational m in I with T2(m) small */
 INLINE GEN
 idealpseudomin_nonscalar(GEN I, GEN G)
 {
@@ -3006,26 +2722,6 @@ idealpseudomin_nonscalar(GEN I, GEN G)
   GEN m = ZM_ZC_mul(I, gel(u,1));
   if (ZV_isscalar(m) && lg(u) > 2) m = ZM_ZC_mul(I, gel(u,2));
   return m;
-}
-/* Same I,G; t_VEC of irrational m in I with T2(m) small */
-INLINE GEN
-idealpseudominvec(GEN I, GEN G)
-{
-  long i, j, k, n = lg(I)-1;
-  GEN x, L, b = idealpseudored(I, G);
-  L = cgetg(1 + (n*(n+1))/2, t_VEC);
-  for (i = k = 1; i <= n; i++)
-  {
-    x = gel(b,i);
-    if (!ZV_isscalar(x)) gel(L,k++) = x;
-  }
-  for (i = 2; i <= n; i++)
-    for (j = 1; j < i; j++)
-    {
-      x = ZC_add(gel(b,i),gel(b,j));
-      if (!ZV_isscalar(x)) gel(L,k++) = x;
-    }
-  setlg(L,k); return L;
 }
 
 INLINE GEN
@@ -3076,8 +2772,6 @@ INLINE void
 pari_err_DIM(const char *f) { pari_err(e_DIM, f); }
 INLINE void
 pari_err_FILE(const char *f, const char *g) { pari_err(e_FILE, f,g); }
-INLINE void
-pari_err_FILEDESC(const char *f, long n) { pari_err(e_FILEDESC, f,n); }
 INLINE void
 pari_err_FLAG(const char *f) { pari_err(e_FLAG,f); }
 INLINE void

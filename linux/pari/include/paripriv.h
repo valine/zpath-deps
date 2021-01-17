@@ -4,8 +4,7 @@ This file is part of the PARI/GP package.
 
 PARI/GP is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. It is distributed in the hope that it will be useful, but WITHOUT
+Foundation. It is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY WHATSOEVER.
 
 Check the License for details. You should have received a copy of it, along
@@ -17,31 +16,23 @@ BEGINEXTERN
 /* for qsort */
 typedef int (*QSCOMP)(const void *, const void *);
 
-#define uel(a,i)            (((ulong*)(a))[i])
-#define ucoeff(a,i,j)       (((ulong**)(a))[j][i])
-#define umael(a,i,j)        (((ulong**)(a))[i][j])
-#define umael2(a,i,j)       (((ulong**)(a))[i][j])
-#define umael3(a,i,j,k)     (((ulong***)(a))[i][j][k])
-#define umael4(a,i,j,k,l)   (((ulong****)(a))[i][j][k][l])
-#define umael5(a,i,j,k,l,m) (((ulong*****)(a))[i][j][k][l][m])
+#define ucoeff(a,i,j)  (((ulong**)(a))[j][i])
+#define umael(a,i,j)   (((ulong**)(a))[i][j])
+#define uel(a,i)       (((ulong*)(a))[i])
 
 #define numberof(x) (sizeof(x) / sizeof((x)[0]))
 
 /* to manipulate 'blocs' */
-#define BL_HEAD 8
+#define BL_HEAD 4
 #define bl_base(x) (void*)((x) - BL_HEAD)
-#define bl_height(x) (((GEN)x)[-8])
-#define bl_left(x)   (((GEN*)x)[-7])
-#define bl_right(x)  (((GEN*)x)[-6])
-#define bl_size(x)   (((GEN)x)[-5])
-#define bl_refc(x)   (((GEN)x)[-4])
-#define bl_next(x)   (((GEN*)x)[-3])
-#define bl_prev(x)   (((GEN*)x)[-2])
-#define bl_num(x)    (((GEN)x)[-1])
-
-void clone_lock(GEN C);
-void clone_unlock(GEN C);
-void clone_unlock_deep(GEN C);
+#define bl_refc(x) (((GEN)x)[-4])
+#define bl_next(x) (((GEN*)x)[-3])
+#define bl_prev(x) (((GEN*)x)[-2])
+#define bl_num(x)  (((GEN)x)[-1])
+INLINE void
+clone_lock(GEN C) { if (isclone(C)) ++bl_refc(C); }
+INLINE void
+clone_unlock(GEN C) { if (isclone(C)) gunclone(C); }
 
 /* swap */
 #define lswap(x,y) {long _z=x; x=y; y=_z;}
@@ -57,25 +48,8 @@ GEN resetloop(GEN a, GEN b);
 GEN setloop(GEN a);
 
 /* parser */
-
-/* GP control structures */
-#define EXPR_WRAP(code, call) \
-{ GEN z; GEN __E = code; \
-  push_lex(gen_0, __E); z = call; pop_lex(1); return z; }
-#define EXPRVOID_WRAP(code, call) \
-{ GEN __E = code; \
-  push_lex(gen_0, __E); call; pop_lex(1); }
-#define EXPR_ARG __E, &gp_eval
-#define EXPR_ARGPREC __E, &gp_evalprec
-#define EXPR_ARGUPTO __E, &gp_evalupto
-#define EXPR_ARGBOOL __E, &gp_evalbool
-#define EXPR_ARGVOID __E, &gp_evalvoid
-
 GEN  iferrpari(GEN a, GEN b, GEN c);
-void forfactored(GEN a, GEN b, GEN code);
 void forpari(GEN a, GEN b, GEN node);
-void foreachpari(GEN a, GEN node);
-void forsquarefree(GEN a, GEN b, GEN code);
 void untilpari(GEN a, GEN b);
 void whilepari(GEN a, GEN b);
 GEN  ifpari(GEN g, GEN a, GEN b);
@@ -98,22 +72,17 @@ GEN  gsube(GEN *x, GEN y);
 GEN  gsub1e(GEN *x);
 GEN  gshift_right(GEN x, long n);
 
-GEN  asympnum0(GEN u, GEN alpha, long prec);
-GEN  asympnumraw0(GEN u, long LIM, GEN alpha, long prec);
-GEN  derivnum0(GEN a, GEN code, GEN ind, long prec);
-GEN  derivfun0(GEN args, GEN def, GEN code, long k, long prec);
+GEN  asympnum0(GEN u, long muli, GEN alpha, long prec);
+GEN  derivnum0(GEN a, GEN code, long prec);
+GEN  derivfun0(GEN code, GEN args, long prec);
 GEN  direuler0(GEN a, GEN b, GEN code, GEN c);
-GEN  direuler_bad(void *E, GEN (*eval)(void *, GEN, long), GEN a, GEN b, GEN c, GEN Sbad);
+GEN  direuler_bad(void *E, GEN (*eval)(void *, GEN), GEN a, GEN b, GEN c, GEN Sbad);
 void forcomposite(GEN a, GEN b, GEN code);
 void fordiv(GEN a, GEN code);
-void fordivfactored(GEN a, GEN code);
 void forell0(long a, long b, GEN code, long flag);
-void forperm0(GEN k, GEN code);
 void forprime(GEN a, GEN b, GEN code);
-void forprimestep(GEN a, GEN b, GEN q, GEN code);
 void forstep(GEN a, GEN b, GEN s, GEN code);
 void forsubgroup0(GEN cyc, GEN bound, GEN code);
-void forsubset0(GEN nk, GEN code);
 void forvec(GEN x, GEN code, long flag);
 void forpart0(GEN k, GEN code , GEN nbound, GEN abound);
 GEN  intcirc0(GEN a, GEN R, GEN code, GEN tab, long prec);
@@ -121,21 +90,17 @@ GEN  intfuncinit0(GEN a, GEN b, GEN code, long m, long prec);
 GEN  intnum0(GEN a, GEN b, GEN code, GEN tab, long prec);
 GEN  intnumgauss0(GEN a, GEN b, GEN code, GEN tab, long prec);
 GEN  intnumromb0_bitprec(GEN a, GEN b, GEN code, long flag, long bit);
-GEN  laurentseries0(GEN f, long M, long v, long prec);
-GEN  limitnum0(GEN u, GEN alpha, long prec);
+GEN  limitnum0(GEN u, long muli, GEN alpha, long prec);
 GEN  matrice(GEN nlig, GEN ncol, GEN code);
-void pariplot0(GEN a, GEN b, GEN code, GEN ysmlu, GEN ybigu, long prec);
 GEN  prodeuler0(GEN a, GEN b, GEN code, long prec);
 GEN  prodinf0(GEN a, GEN code, long flag, long prec);
 GEN  produit(GEN a, GEN b, GEN code, GEN x);
 GEN  somme(GEN a, GEN b, GEN code, GEN x);
 GEN  sumalt0(GEN a, GEN code,long flag, long prec);
 GEN  sumdivexpr(GEN num, GEN code);
-GEN  sumdivmultexpr0(GEN num, GEN code);
-GEN  suminf0_bitprec(GEN a, GEN code, long bit);
+GEN  sumdivmultexpr(GEN num, GEN code);
+GEN  suminf0(GEN a, GEN code, long prec);
 GEN  sumnum0(GEN a, GEN code, GEN tab, long prec);
-GEN  sumnumap0(GEN a, GEN code, GEN tab, long prec);
-GEN  sumnumlagrange0(GEN a, GEN code, GEN tab, long prec);
 GEN  sumnummonien0(GEN a, GEN code, GEN tab, long prec);
 GEN  sumpos0(GEN a, GEN code, long flag,long prec);
 GEN  vecexpr0(GEN nmax, GEN code, GEN pred);
@@ -146,82 +111,24 @@ GEN  vvecteur(GEN nmax, GEN n);
 GEN  zbrent0(GEN a, GEN b, GEN code, long prec);
 GEN  solvestep0(GEN a, GEN b, GEN step, GEN code, long flag, long prec);
 
-GEN  ploth0(GEN a, GEN b, GEN code, long flag, long n, long prec);
-GEN  plothexport0(GEN fmt, GEN a, GEN b, GEN code, long flags, long n, long prec);
-GEN  psploth0(GEN a,GEN b,GEN code,long flag,long n,long prec);
-GEN  plotrecth0(long ne,GEN a,GEN b,GEN code,ulong flags,long n,long prec);
-
 GEN  listcreate_gp(long n);
 
 /* mt */
 void mt_sigint(void);
 void mt_err_recover(long er);
-void mt_export_add(const char *str, GEN val);
-void mt_export_del(const char *str);
 void mt_init_stack(size_t s);
 int  mt_is_thread(void);
-
-GEN  eisker_worker(GEN Ei, GEN M, GEN D, GEN co, GEN CD);
+GEN  parapply_worker(GEN d, GEN code);
 GEN  pareval_worker(GEN code);
-GEN  parselect_worker(GEN d, GEN code);
 void parfor0(GEN a, GEN b, GEN code, GEN code2);
 GEN  parfor_worker(GEN i, GEN C);
-void parforeach0(GEN x, GEN code, GEN code2);
 void parforprime0(GEN a, GEN b, GEN code, GEN code2);
-void parforprimestep0(GEN a, GEN b, GEN q, GEN code, GEN code2);
 void parforvec0(GEN a, GEN code, GEN code2, long flag);
 GEN  parvector_worker(GEN i, GEN C);
-GEN  polmodular_worker(GEN pt, ulong L, GEN hilb, GEN factu,
+GEN  polmodular_worker(ulong p, ulong t, ulong L, GEN hilb, GEN factu,
        GEN vne, GEN vinfo, long compute_derivs, GEN j_powers, GEN fdb);
 GEN  nmV_polint_center_tree_worker(GEN Va, GEN T, GEN R, GEN xa, GEN m2);
-GEN  nmV_chinese_center_tree_seq(GEN A, GEN P, GEN T, GEN R);
-GEN  nxMV_polint_center_tree_worker(GEN Va, GEN T, GEN R, GEN xa, GEN m2);
-GEN  nxMV_chinese_center_tree_seq(GEN A, GEN P, GEN T, GEN R);
-GEN  F2xq_log_Coppersmith_worker(GEN u, long i, GEN V, GEN R);
-GEN  Flxq_log_Coppersmith_worker(GEN u, long i, GEN V, GEN R);
-GEN  Fp_log_sieve_worker(long a, long prmax, GEN C, GEN c, GEN Ci, GEN ci, GEN pr, GEN sz);
-GEN  QM_charpoly_ZX_worker(GEN P, GEN M, GEN dM);
-GEN  QXQ_div_worker(GEN P, GEN A, GEN B, GEN C);
-GEN  QXQ_inv_worker(GEN P, GEN A, GEN B);
 GEN  ZX_resultant_worker(GEN P, GEN A, GEN B, GEN dB);
-GEN  ZXQX_resultant_worker(GEN P, GEN A, GEN B, GEN T, GEN dB);
-GEN  ZX_ZXY_resultant_worker(GEN P, GEN A, GEN B, GEN dB, GEN v);
-GEN  ZX_direct_compositum_worker(GEN P, GEN A, GEN B);
-GEN  ZXQX_direct_compositum_worker(GEN P, GEN A, GEN B, GEN C);
-GEN  ZX_gcd_worker(GEN P, GEN A, GEN B, GEN g);
-GEN  ZXQ_minpoly_worker(GEN P, GEN A, GEN B, long d);
-GEN  ZM_det_worker(GEN P, GEN A);
-GEN  ZM_inv_worker(GEN P, GEN A);
-GEN  ZM_ker_worker(GEN P, GEN A);
-GEN  ZM_mul_worker(GEN P, GEN A, GEN B);
-GEN  ZabM_inv_worker(GEN P, GEN A, GEN Q);
-GEN  aprcl_step4_worker(ulong q, GEN pC, GEN N, GEN v);
-GEN  aprcl_step6_worker(GEN r, long t, GEN N, GEN N1, GEN et);
-GEN  ecpp_sqrt_worker(GEN g, GEN N, GEN p);
-GEN  ecpp_ispsp_worker(GEN N);
-GEN  ecpp_step2_worker(GEN S, GEN HD, GEN primelist);
-GEN  primecertisvalid_ecpp_worker(GEN certi);
-GEN  lfuninit_worker(long r, GEN K, GEN L, GEN peh2d, GEN vroots, GEN dr, GEN di, GEN an, GEN bn);
-GEN  lfuninit_theta2_worker(long r, GEN L, GEN qk, GEN a, GEN di, GEN an, GEN bn);
-GEN  gen_parapply(GEN worker, GEN D);
-GEN  parapply_slice_worker(GEN worker, GEN D);
-GEN  gen_parapply_slice(GEN worker, GEN D, long mmin);
-GEN  gen_crt(const char *str, GEN worker, forprime_t *S, GEN dB, ulong bound, long mmin, GEN *pt_mod,
-             GEN crt(GEN, GEN, GEN*), GEN center(GEN, GEN, GEN));
-void gen_inccrt(const char *str, GEN worker, GEN dB, long n, long mmin,
-           forprime_t *S, GEN *pt_H, GEN *pt_mod, GEN crt(GEN, GEN, GEN*),
-           GEN center(GEN, GEN, GEN));
-void gen_inccrt_i(const char *str, GEN worker, GEN dB, long n, long mmin,
-           forprime_t *S, GEN *pH, GEN *pmod, GEN crt(GEN, GEN, GEN*),
-           GEN center(GEN, GEN, GEN));
-GEN  direllnf_worker(GEN P, ulong X, GEN E);
-GEN  dirartin_worker(GEN P, ulong X, GEN nf, GEN G, GEN V, GEN aut);
-GEN  direllsympow_worker(GEN P, ulong X, GEN E, ulong m);
-GEN  dirgenus2_worker(GEN P, ulong X, GEN Q);
-GEN  pardireuler(GEN worker, GEN a, GEN b, GEN c, GEN Sbad);
-GEN  FpM_ratlift_worker(GEN A, GEN mod, GEN B);
-GEN  ellQ_factorback_worker(GEN A, GEN P, GEN L, GEN c4);
-GEN  chinese_unit_worker(GEN P, GEN A, GEN U, GEN B, GEN D, GEN C);
 
 /* Relative number fields */
 enum { rnf_NFABS = 1, rnf_MAPS };
@@ -235,8 +142,8 @@ GEN FF_elldata(GEN E, GEN fg);
 enum { t_LFUN_GENERIC, t_LFUN_ZETA, t_LFUN_NF, t_LFUN_ELL, t_LFUN_KRONECKER,
        t_LFUN_CHIZ, t_LFUN_CHIGEN, t_LFUN_ETA,
        t_LFUN_DIV, t_LFUN_MUL, t_LFUN_CONJ,
-       t_LFUN_SYMPOW_ELL, t_LFUN_QF, t_LFUN_ARTIN, t_LFUN_MFCLOS,
-       t_LFUN_GENUS2, t_LFUN_TWIST, t_LFUN_CLOSURE0, t_LFUN_SHIFT};
+       t_LFUN_SYMSQ_ELL, t_LFUN_QF, t_LFUN_ARTIN,
+       t_LFUN_GENUS2 };
 enum { t_LDESC_INIT, t_LDESC_THETA, t_LDESC_PRODUCT };
 
 /* Elliptic curves */
@@ -245,13 +152,13 @@ enum { R_PERIODS = 1, R_ETA, R_ROOTS, R_AB };
 
 enum { Qp_ROOT = 1, Qp_TATE };
 enum { Q_GROUPGEN = 5, Q_GLOBALRED, Q_ROOTNO, Q_MINIMALMODEL };
-enum { NF_MINIMALMODEL = 1, NF_GLOBALRED, NF_MINIMALPRIMES, NF_ROOTNO, NF_NF };
+enum { NF_MINIMALMODEL = 1, NF_GLOBALRED };
 
 /* common to Fp and Fq */
 enum { FF_CARD = 1, FF_GROUP, FF_GROUPGEN, FF_O };
 
 /* for Buchall_param */
-enum { fupb_NONE = 0, fupb_RELAT, fupb_LARGE, fupb_PRECI };
+enum { fupb_NONE, fupb_RELAT, fupb_LARGE, fupb_PRECI };
 
 /* Polycyclic presentation for the classgroup of discriminant D */
 typedef struct {
@@ -288,7 +195,7 @@ typedef classgp_pcp_struct classgp_pcp_t[1];
  * T is a twisting parameter, which satisfies (T|p) == -1. */
 typedef struct {
   long D, t, u, v;
-  ulong p, pi, s2, T;
+  ulong p, pi, T;
 } norm_eqn_struct;
 typedef norm_eqn_struct norm_eqn_t[1];
 
@@ -330,6 +237,8 @@ long   getdebugvar(void);
 void   setdebugvar(long n);
 void   debug_stack(void);
 void   fill_stack(void);
+void   init_dalloc(void);
+double *dalloc(size_t n);
 void   minim_alloc(long n, double ***q, GEN *x, double **y,  double **z, double **v);
 int    pop_entree_block(entree *ep, long loc);
 int    pop_val_if_newer(entree *ep, long loc);
@@ -351,10 +260,13 @@ entree* do_alias(entree *ep);
 char* get_sep(const char *t);
 long get_int(const char *s, long dflt);
 ulong get_uint(const char *s);
+int  gp_init_functions(void);
 void gp_initrc(pari_stack *p_A);
 
 void pari_sigint(const char *s);
+pariFILE *pari_last_tmp_file(void);
 void* get_stack(double fraction, long min);
+void  init_graph(void);
 void  free_graph(void);
 void  initout(int initerr);
 void  resetout(int initerr);
@@ -371,7 +283,7 @@ extern long precreal;
 
 void lim_lines_output(char *s, long n, long max);
 int tex2mail_output(GEN z, long n);
-void gen_output(GEN x);
+void gen_output(GEN x, pariout_t *T);
 void fputGEN_pariout(GEN x, pariout_t *T, FILE *out);
 
 void parsestate_reset(void);
@@ -382,12 +294,6 @@ void compilestate_reset(void);
 void compilestate_save(struct pari_compilestate *comp);
 void compilestate_restore(struct pari_compilestate *comp);
 
-void filestate_save(struct pari_filestate *file);
-void filestate_restore(struct pari_filestate *file);
-void tmp_restore(pariFILE *F);
-
-long evalstate_get_trace(void);
-void evalstate_set_trace(long lvl);
 void evalstate_clone(void);
 void evalstate_reset(void);
 void evalstate_restore(struct pari_evalstate *state);
@@ -396,9 +302,9 @@ void evalstate_save(struct pari_evalstate *state);
 void varstate_save(struct pari_varstate *s);
 void varstate_restore(struct pari_varstate *s);
 
-void mtstate_save(struct pari_mtstate *s);
+void mtstate_save(long *pending);
 void mtstate_reset(void);
-void mtstate_restore(struct pari_mtstate *s);
+void mtstate_restore(long *pending);
 
 void debug_context(void);
 
@@ -462,11 +368,14 @@ char *pari_translate_string(const char *src, char *s, char *entry);
 
 gp_data *default_gp_data(void);
 
+void delete_dirs(gp_path *p);
+void gp_expand_path(gp_path *p);
+
 typedef char *(*fgets_t)(char *, int, void*);
 
 typedef struct input_method {
 /* optional */
-  fgets_t myfgets;  /* like libc fgets() but last argument is (void*) */
+  fgets_t fgets;  /* like libc fgets() but last argument is (void*) */
 /* mandatory */
   char * (*getline)(char**, int f, struct input_method*, filtre_t *F);
   int free; /* boolean: must we free the output of getline() ? */
@@ -536,6 +445,7 @@ GEN   sqrispec(GEN x, long nx);
 ulong *convi(GEN x, long *l);
 
 int approx_0(GEN x, GEN y);
+GEN bernfrac_using_zeta(long n);
 
 /* powers */
 GEN    rpowuu(ulong a, ulong n, long prec);
@@ -560,12 +470,16 @@ GEN LLL_check_progress(GEN Bnorm, long n0, GEN m, int final, long *ti_LLL);
 /* integer factorization / discrete log */
 ulong is_kth_power(GEN x, ulong p, GEN *pt);
 GEN   mpqs(GEN N);
+ulong gcduodd(ulong x, ulong y);
 
 /* Polynomials */
 /* a) Arithmetic/conversions */
+GEN  addmulXn(GEN x, GEN y, long d);
+GEN  addshiftpol(GEN x, GEN y, long d);
 GEN  lift_if_rational(GEN x);
 GEN  monomial(GEN a, long degpol, long v);
 GEN  monomialcopy(GEN a, long degpol, long v);
+GEN  mulmat_pol(GEN A, GEN x);
 GEN  ser2pol_i(GEN x, long lx);
 GEN  ser2rfrac_i(GEN x);
 GEN  swap_vars(GEN b0, long v);
@@ -573,20 +487,22 @@ GEN  RgX_recipspec_shallow(GEN x, long l, long n);
 
 /* b) Modular */
 GEN  bezout_lift_fact(GEN T, GEN Tmod, GEN p, long e);
+GEN  FpX_quad_root(GEN x, GEN p, int unknown);
 GEN  polsym_gen(GEN P, GEN y0, long n, GEN T, GEN N);
 GEN  ZXQ_charpoly_sqf(GEN A, GEN B, long *lambda, long v);
 GEN  ZX_disc_all(GEN,ulong);
 GEN  ZX_resultant_all(GEN A, GEN B, GEN dB, ulong bound);
 GEN  ZX_ZXY_resultant_all(GEN A, GEN B, long *lambda, GEN *LPRS);
-
-GEN FlxqM_mul_Kronecker(GEN A, GEN B, GEN T, ulong p);
-GEN FqM_mul_Kronecker(GEN x, GEN y, GEN T, GEN p);
+GEN  RgXQ_minpoly_naive(GEN y, GEN P);
 
 /* c) factorization */
 GEN chk_factors_get(GEN lt, GEN famod, GEN c, GEN T, GEN N);
 long cmbf_maxK(long nb);
 GEN ZX_DDF(GEN x);
 GEN initgaloisborne(GEN T, GEN dn, long prec, GEN *pL, GEN *pprep, GEN *pdis);
+GEN logmax_modulus_bound(GEN p);
+GEN polint_i(GEN xa, GEN ya, GEN x, long n, GEN *ptdy);
+GEN quicktrace(GEN x, GEN sym);
 
 /* pari_init / pari_close */
 void pari_close_compiler(void);
@@ -595,7 +511,6 @@ void pari_close_files(void);
 void pari_close_floats(void);
 void pari_close_homedir(void);
 void pari_close_parser(void);
-void pari_close_paths(void);
 void pari_close_primes(void);
 void pari_init_buffers(void);
 void pari_init_compiler(void);
@@ -604,48 +519,46 @@ void pari_init_evaluator(void);
 void pari_init_files(void);
 void pari_init_floats(void);
 void pari_init_homedir(void);
-void pari_init_graphics(void);
 void pari_init_parser(void);
 void pari_init_rand(void);
-void pari_init_paths(void);
-void pari_init_primetab(void);
 void pari_init_seadata(void);
-GEN pari_get_seadata(void);
-void pari_set_primetab(GEN global_primetab);
-void pari_set_seadata(GEN seadata);
-void pari_set_varstate(long *vp, struct pari_varstate *vs);
+void pari_pthread_init_seadata(void);
+void pari_pthread_init_varstate(void);
 void pari_thread_close_files(void);
-
-void export_add(const char *str, GEN val);
-void export_del(const char *str);
-GEN  export_get(const char *str);
-void exportall(void);
-void unexportall(void);
+void pari_thread_init_seadata(void);
+void pari_thread_init_varstate(void);
 
 /* BY FILES */
 
 /* parinf.h */
 
 GEN fincke_pohst(GEN a,GEN BOUND,long stockmax,long PREC, FP_chk_fun *CHECK);
-void init_zlog(zlog_S *S, GEN bid);
+void init_zlog_bid(zlog_S *S, GEN bid);
 GEN  log_gen_arch(zlog_S *S, long index);
 GEN  log_gen_pr(zlog_S *S, long index, GEN nf, long e);
-GEN  sprk_log_gen_pr(GEN nf, GEN sprk, long e);
-GEN  sprk_log_prk1(GEN nf, GEN a, GEN sprk);
+GEN  zlog(GEN nf, GEN a, GEN sgn, zlog_S *S);
+/* conversions basis / alg */
+/* nf a genuine NF, x an nfelt (t_COL) or t_MAT whose columns represent nfelts.
+ * Return the corresponding elements as t_POLs (implicitly mod nf.pol) */
+#define coltoliftalg(nf,x) (gmul(gel((nf),7), (x)))
 GEN    poltobasis(GEN nf,GEN x);
 GEN    coltoalg(GEN nf,GEN x);
 
-GEN    rnfdisc_get_T(GEN nf, GEN P, GEN *lim);
+GEN    get_arch_real(GEN nf,GEN x,GEN *emb,long prec);
+GEN    get_proj_modT(GEN basis, GEN T, GEN p);
 GEN    make_integral(GEN nf, GEN L0, GEN f, GEN listpr);
-GEN    rnfallbase(GEN nf, GEN pol, GEN lim, GEN rnfeq, GEN *pD, GEN *pfi,
-                  GEN *pdKP);
+GEN    rnfallbase(GEN nf, GEN *ppol, GEN *pD, GEN *pd, GEN *pfi);
 GEN    subgroupcondlist(GEN cyc, GEN bound, GEN listKer);
+GEN    ideallog_sgn(GEN nf, GEN x, GEN sgn, GEN bid);
+GEN    zlog_units(GEN nf, GEN U, GEN sgnU, GEN bid);
+GEN    zlog_units_noarch(GEN nf, GEN U, GEN bid);
 
 /* Qfb.c */
 
 GEN     redimagsl2(GEN q, GEN *U);
 GEN     redrealsl2(GEN V, GEN d, GEN rd);
 GEN     redrealsl2step(GEN A, GEN d, GEN rd);
+GEN     redtausl2(GEN t, GEN *U);
 
 /* alglin1.c */
 
@@ -664,24 +577,17 @@ int     is_gener_Fl(ulong x, ulong p, ulong p_1, GEN L);
 int     divisors_init(GEN n, GEN *pP, GEN *pE);
 long    set_optimize(long what, GEN g);
 
-/* base1.c */
-
-GEN zk_galoisapplymod(GEN nf, GEN z, GEN S, GEN p);
-
 /* base2.c */
 
 GEN     dim1proj(GEN prh);
 GEN     gen_if_principal(GEN bnf, GEN x);
+GEN     polsymmodp(GEN g, GEN p);
+GEN     nfbasis_gp(GEN T);
 
 /* base3.c */
 
 void    check_nfelt(GEN x, GEN *den);
 GEN     zk_ei_mul(GEN nf, GEN x, long i);
-GEN     log_prk(GEN nf, GEN a, GEN sprk, GEN mod);
-GEN     log_prk_units(GEN nf, GEN D, GEN sprk);
-GEN     log_prk_units_init(GEN bnf);
-GEN     veclog_prk(GEN nf, GEN v, GEN sprk);
-GEN     log_prk_init(GEN nf, GEN pr, long k, GEN mod);
 
 /* base4.c */
 
@@ -690,9 +596,6 @@ GEN     factorbackprime(GEN nf, GEN L, GEN e);
 /* bb_group.c */
 
 GEN     producttree_scheme(long n);
-
-/* bern.c */
-long bernbitprec(long N);
 
 /* bibli2.c */
 
@@ -724,48 +627,28 @@ GEN     subgrouplist_cond_sub(GEN bnr, GEN C, GEN bound);
 
 /* buch4.c */
 
-GEN     nf_quadchar_modpr(GEN nf, GEN z, GEN modpr, GEN pstar);
+GEN     bnfsunit0(GEN bnf, GEN S, long flag, long prec);
 
 /* crvwtors.c */
 
 void random_curves_with_m_torsion(ulong *a4, ulong *a6, ulong *tx, ulong *ty, long ncurves, long m, ulong p);
 
-/* dirichlet.c */
-GEN direuler_factor(GEN s, long n);
-
 /* elliptic.c */
 
 void ellprint(GEN e);
-GEN  elltors_psylow(GEN e, ulong p);
-GEN  ellintegralbmodel(GEN e, GEN *pv);
-GEN  ellQ_genreduce(GEN E, GEN G, long prec);
 
 /* es.c */
 
+const char * eng_ord(long i);
+void    filestate_restore(pariFILE *F);
 void    killallfiles(void);
 pariFILE* newfile(FILE *f, const char *name, int type);
 int     popinfile(void);
 pariFILE* try_pipe(const char *cmd, int flag);
 
-/* F2m.c */
+/* Flx.c */
 
-GEN     F2m_gauss_pivot(GEN x, long *rr);
-GEN     F2m_gauss_sp(GEN a, GEN b);
-GEN     F2m_invimage_i(GEN A, GEN B);
-
-/* Fle.c */
-
-void    FleV_add_pre_inplace(GEN P, GEN Q, GEN a4, ulong p, ulong pi);
-void    FleV_dbl_pre_inplace(GEN P, GEN a4, ulong p, ulong pi);
-void    FleV_mulu_pre_inplace(GEN P, ulong n, GEN a4, ulong p, ulong pi);
-void    FleV_sub_pre_inplace(GEN P, GEN Q, GEN a4, ulong p, ulong pi);
-
-/* Flv.c */
-
-GEN     Flm_gauss_sp(GEN a, GEN b, ulong *detp, ulong p);
-GEN     Flm_invimage_i(GEN A, GEN B, ulong p);
-GEN     Flm_inv_sp(GEN a, ulong *detp, ulong p);
-GEN     Flm_pivots(GEN x, ulong p, long *rr, long inplace);
+GEN FlxqM_mul_Kronecker(GEN A, GEN B, GEN T, ulong p);
 
 /* Flxq_log.c */
 
@@ -780,24 +663,10 @@ long    zx_is_pcyc(GEN T);
 /* FpV.c */
 
 GEN FpMs_leftkernel_elt_col(GEN M, long nbcol, long nbrow, GEN p);
-GEN FpX_to_mod_raw(GEN z, GEN p);
-
-/* FpX.c */
-
-GEN     ZlXQXn_expint(GEN h, long e, GEN T, GEN p, ulong pp);
-
-/* FpX_factor.c */
-
-GEN     ddf_to_ddf2(GEN V);
-long    ddf_to_nbfact(GEN D);
-GEN     vddf_to_simplefact(GEN V, long d);
-
-/* FpXQX_factor.c */
-
-GEN     FpXQX_factor_Berlekamp(GEN x, GEN T, GEN p);
 
 /* forprime.c*/
 
+void    init_modular(forprime_t *S);
 void    init_modular_big(forprime_t *S);
 void    init_modular_small(forprime_t *S);
 
@@ -806,10 +675,21 @@ void    init_modular_small(forprime_t *S);
 GEN     galoiscosets(GEN O, GEN perm);
 GEN     matrixnorm(GEN M, long prec);
 
+/* galois.c */
+
+GEN     polgaloisnamesbig(long n, long k);
+
 /* gen1.c */
 
+int     ff_poltype(GEN *x, GEN *p, GEN *pol);
 GEN     gred_rfrac_simple(GEN n, GEN d);
 GEN     sqr_ser_part(GEN x, long l1, long l2);
+
+/* gen3.c */
+
+GEN     gsubst_expr(GEN pol, GEN from, GEN to);
+GEN     poltoser(GEN x, long v, long prec);
+GEN     rfractoser(GEN x, long v, long prec);
 
 /* hash.c */
 
@@ -818,38 +698,43 @@ hashtable *hashstr_import_static(hashentry *e, ulong size);
 /* hyperell.c */
 
 GEN     ZlXQX_hyperellpadicfrobenius(GEN H, GEN T, ulong p, long n);
-GEN     hyperell_redsl2(GEN Q);
 
 /* ifactor1.c */
 
-ulong snextpr(ulong p, byteptr *d, long *rcn, long *q, int (*ispsp)(ulong));
+GEN     ellfacteur(GEN n, int insist);
+ulong   snextpr(ulong p, byteptr *d, long *rcn, long *q, long k);
 
 /* intnum.c */
 
 GEN     contfraceval_inv(GEN CF, GEN tinv, long nlim);
 
-/* mftrace.c */
-
-void pari_close_mf(void);
-long polishomogeneous(GEN P);
-GEN sertocol(GEN S);
-GEN mfrhopol(long n);
-GEN mfrhopol_u_eval(GEN Q, ulong t2);
-GEN mfrhopol_eval(GEN Q, GEN t2);
-
 /* prime.c */
 
 long    BPSW_psp_nosmalldiv(GEN N);
-int     MR_Jaeschke(GEN n);
+int     Fl_MR_Jaeschke(ulong n, long k);
+int     MR_Jaeschke(GEN n, long k);
 long    isanypower_nosmalldiv(GEN N, GEN *px);
 void    prime_table_next_p(ulong a, byteptr *pd, ulong *pp, ulong *pn);
 
 /* perm.c */
 
 long    cosets_perm_search(GEN C, GEN p);
+GEN     group_export_GAP(GEN G);
+GEN     group_export_MAGMA(GEN G);
 GEN     perm_generate(GEN S, GEN H, long o);
 long    perm_relorder(GEN p, GEN S);
-GEN     vecperm_extendschreier(GEN C, GEN v, long n);
+GEN     perm_to_GAP(GEN p);
+
+/* polarit1.c */
+
+GEN     F2x_factcantor(GEN f, long flag);
+GEN     Flx_factcantor(GEN f, ulong p, long flag);
+GEN     FpX_factcantor(GEN f, GEN pp, long flag);
+GEN     factcantor0(GEN f, GEN pp, long flag);
+
+/* polarit2.c */
+
+GEN     sylvestermatrix_i(GEN x, GEN y);
 
 /* polclass.c */
 
@@ -866,10 +751,16 @@ void polmodular_db_add_levels(GEN *db, long *levels, long k, long inv);
 GEN polmodular_db_for_inv(GEN db, long inv);
 GEN polmodular_db_getp(GEN fdb, long L, ulong p);
 
-long modinv_level(long inv);
-long modinv_degree(long *p1, long *p2, long inv);
-long modinv_ramified(long D, long inv);
-long modinv_j_from_2double_eta(GEN F, long inv, ulong x0, ulong x1, ulong p, ulong pi);
+int inv_is_valid(long inv);
+long inv_level(long inv);
+long inv_degree(long *p1, long *p2, long inv);
+long inv_ramified(long D, long inv);
+double inv_height_factor(long inv);
+int inv_good_discriminant(long D, long inv);
+int inv_good_prime(long p, long inv);
+int inv_weber(long inv);
+int inv_double_eta(long inv);
+long inv_j_from_2double_eta(GEN F, long inv, ulong *j, ulong x0, ulong x1, ulong p, ulong pi);
 GEN double_eta_raw(long inv);
 ulong modfn_root(ulong j, norm_eqn_t ne, long inv);
 long modfn_unambiguous_root(ulong *r, long inv, ulong j0, norm_eqn_t ne, GEN jdb);
@@ -879,41 +770,37 @@ GEN qfb_nform(long D, long n);
 
 ulong   Flj_order_ufact(GEN P, ulong n, GEN F, ulong a4, ulong p, ulong pi);
 
+/* FpX.c */
+
+GEN     FpX_gcd_check(GEN x, GEN y, GEN p);
+
 /* polarit3.c */
 
 GEN     Flm_Frobenius_pow(GEN M, long d, GEN T, ulong p);
 GEN     FpM_Frobenius_pow(GEN M, long d, GEN T, GEN p);
 GEN     FpX_compositum(GEN A, GEN B, GEN p);
-GEN     Flx_direct_compositum(GEN A, GEN B, ulong p);
-GEN     FlxV_direct_compositum(GEN V, ulong p);
-GEN     FlxqX_direct_compositum(GEN P, GEN Q, GEN T, ulong p);
 GEN     FpX_direct_compositum(GEN A, GEN B, GEN p);
-GEN     FpXV_direct_compositum(GEN V, GEN p);
-GEN     nf_direct_compositum(GEN nf, GEN A, GEN B);
 ulong   ZX_ZXY_ResBound(GEN A, GEN B, GEN dB);
-GEN     ffinit_Artin_Schreier(ulong p, long l);
+GEN     ffinit_Artin_Shreier(GEN ip, long l);
 GEN     ffinit_rand(GEN p, long n);
-
-/* ramanujantau.c */
-GEN     ramanujantau_worker(GEN gt, GEN p2_7, GEN p_9, GEN p);
-GEN     taugen_n_worker(GEN t, GEN pol, GEN p4);
 
 /* readline.c */
 
 char**  pari_completion(pari_rl_interface *pari_rl, char *text, int START, int END);
+char*   pari_completion_word(pari_rl_interface *pari_rl, long end);
 char**  pari_completion_matches(pari_rl_interface *pari_rl, const char *s, long pos, long *wordpos);
 
-/* RgX.c */
+/* rootpol.c */
 
-GEN     RgX_homogenous_evalpow(GEN P, GEN A, GEN B);
-GEN     QXQX_homogenous_evalpow(GEN P, GEN A, GEN B, GEN T);
+GEN     FFT(GEN x, GEN Omega);
+GEN     FFTinit(long k, long prec);
 
 /* subcyclo.c */
 
+GEN     bnr_to_znstar(GEN bnr, long *complex);
 GEN     galoiscyclo(long n, long v);
 GEN     znstar_bits(long n, GEN H);
-long    znstar_conductor(GEN H);
-long    znstar_conductor_bits(GEN bits);
+long    znstar_conductor(long n, GEN H);
 GEN     znstar_cosets(long n, long phi_n, GEN H);
 GEN     znstar_elts(long n, GEN H);
 GEN     znstar_generate(long n, GEN V);
@@ -938,8 +825,10 @@ GEN     trans_fix_arg(long *prec, GEN *s0, GEN *sig, GEN *tau, pari_sp *av, GEN 
 
 /* trans3.c */
 
+GEN     bernreal_using_zeta(long n, GEN iz, long prec);
 GEN     double_eta_quotient(GEN a, GEN w, GEN D, long p, long q, GEN pq, GEN sqrtD);
-GEN     inv_szeta_euler(long n, long prec);
+GEN     inv_szeta_euler(long n, double lba, long prec);
+GEN     trueE2(GEN tau, long prec);
 
 /* volcano.c */
 
