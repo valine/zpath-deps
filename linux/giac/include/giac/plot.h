@@ -67,8 +67,8 @@ enum Fl_Color {	// standard colors
 //#ifndef LP64
 typedef ptrdiff_t Int;
 //#else typedef signed long Int; #endif
-#include "Colors.h"
-//#include "../../src/Colors.h"
+//#include "Colors.h"
+#include "../../src/Colors.h"
 enum Fl_Color {
   FL_BLACK = ColorBlack,
   FL_WHITE = ColorWhite,
@@ -196,6 +196,7 @@ namespace giac {
   int erase_pos(GIAC_CONTEXT);
   int erase_pos(int current,GIAC_CONTEXT);
   bool is_segment(const gen & e);
+  bool is_pnt_or_pixon(const gen & g);
   gen remove_at_pnt(const gen & e);
   gen remove_sto(const gen & e);
   vecteur selection2vecteur(const std::vector<int> & selected,GIAC_CONTEXT);
@@ -247,7 +248,7 @@ namespace giac {
   // return parametrization for a parametric curve and translate
   // ellipsis/hyperbola to a rational parametrization
   // m will contain the complex depending on gen_t 
-  bool find_curve_parametrization(const gen & geo_obj,gen & m,const gen & gen_t,double T,gen & tmin,gen & tmax,gen & tstep,GIAC_CONTEXT);
+  bool find_curve_parametrization(const gen & geo_obj,gen & m,const gen & gen_t,double T,gen & tmin,gen & tmax,bool tminmax_defined,GIAC_CONTEXT);
   // test if a point f is on a parametric curve e
   // compute t if true
   bool on(const gen & e_orig,const gen & f,gen & t,GIAC_CONTEXT);
@@ -279,9 +280,12 @@ namespace giac {
 
   gen _erase(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_erase;
-
+  
+  extern int pixon_size; 
+  vecteur merge_pixon(const vecteur & v);
   gen _pixon(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_pixon;
+  void pixon_print(const gen &g,std::string & S,GIAC_CONTEXT);
 
   gen _pixoff(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_pixoff;
@@ -451,6 +455,7 @@ namespace giac {
   extern const unary_function_ptr * const  at_homothetie;
   gen _est_coplanaire(const gen & args,GIAC_CONTEXT);
 
+  extern const unary_function_ptr * const  at_est_dans;
   gen _est_aligne(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_est_aligne;
 
@@ -626,8 +631,8 @@ namespace giac {
   gen _switch_axes(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_switch_axes;
 
-  int find_plotseq_args(const gen & args,gen & expr,gen & x,double & x0d,double & xmin,double & xmax,int & niter,vecteur & attributs,GIAC_CONTEXT);
-  gen plotseq(const gen& f,const gen&x,double x0,double xmin,double xmax,int niter,const vecteur & attributs,const context * contextptr);
+  int find_plotseq_args(const gen & args,gen & expr,gen & x,double & x0d,double & xmin,double & xmax,int & niter,vecteur & attributs,GIAC_CONTEXT,bool & print);
+  gen plotseq(const gen& f,const gen&x,double x0,double xmin,double xmax,int niter,const vecteur & attributs,const context * contextptr,bool print);
   gen _plotseq(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_plotseq;
   extern const unary_function_ptr * const  at_seqplot;
@@ -756,7 +761,7 @@ namespace giac {
   gen _enveloppe(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_enveloppe;
 
-  int graph_output_type(const giac::gen & g);
+  int graph_output_type(const gen & g);
   gen put_attributs(const gen & lieu_geo,const vecteur & attributs,GIAC_CONTEXT);
   vecteur seq2vecteur(const gen & g);
 

@@ -4,11 +4,17 @@
 #include "first.h"
 #include <string>
 
+// pari defines long as long long ifdef _WIN64
+#if defined(_WIN64) && defined(HAVE_LIBPARI)
+  typedef long long * GEN;
+#else
+  typedef long * GEN;
+#endif
+
 #ifndef NO_NAMESPACE_GIAC
 namespace giac {
 #endif // ndef NO_NAMESPACE_GIAC
   class gen;
-  typedef long * GEN;
   // print e as a PARI parsable string, varnum is the # of the var for poly1
   // std::string pariprint(const gen & e,int varnum,GIAC_CONTEXT);
 
@@ -29,7 +35,11 @@ namespace giac {
   bool pari_lift_combine(const vecteur & a,const std::vector<vecteur> & factmod,gen & modulo,std::vector<vecteur> & res);
   gen _pari(const gen & args,GIAC_CONTEXT);
   std::string pari_help(const gen & g);
+#if defined(_WIN64) && defined(HAVE_LIBPARI)
+  bool pari_polroots(const vecteur & p,vecteur & res,long long l,GIAC_CONTEXT);
+#else
   bool pari_polroots(const vecteur & p,vecteur & res,long l,GIAC_CONTEXT);
+#endif
   gen GEN2gen(const GEN & G,const vecteur & vars);
   GEN gen2GEN(const gen & e,const vecteur & vars,GIAC_CONTEXT);
   bool pari_polresultant(const gen & p,const gen & q,const vecteur & lv,gen & res,GIAC_CONTEXT);

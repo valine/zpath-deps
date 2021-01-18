@@ -26,6 +26,9 @@ namespace giac {
   class gen;
   class identificateur;
   struct unary_function_ptr;
+  void restorepurge(const gen & xval,const gen & x,GIAC_CONTEXT);
+  gen assumeeval(const gen & x,GIAC_CONTEXT);
+
   gen complex_subst(const gen & e,const vecteur & substin,const vecteur & substout,GIAC_CONTEXT);
   gen complex_subst(const gen & e,const gen & x,const gen & newx,GIAC_CONTEXT);
   vecteur lvarxwithinv(const gen &e,const gen & x,GIAC_CONTEXT);
@@ -40,6 +43,7 @@ namespace giac {
   // find surd/NTHROOT inside e, set subst1 to list of surd/NTHROOT and subst2
   // to replacement by pow
   void surd2pow(const gen & e,vecteur & subst1,vecteur & subst2,GIAC_CONTEXT);
+  bool when2sign(gen &e,const gen &gen_x,GIAC_CONTEXT);
   gen invexptoexpneg(const gen& g,GIAC_CONTEXT);
   bool is_rewritable_as_f_of(const gen & fu,const gen & u,gen & fx,const gen & gen_x,GIAC_CONTEXT);
 
@@ -66,11 +70,12 @@ namespace giac {
   gen integrate_gen(const gen & e,const gen & f,GIAC_CONTEXT);
   gen _integrate(const gen & args,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_integrate ;
-  bool tegral(const gen & f,const gen & x,const gen & a,const gen &b,const gen & eps,int nmax,gen & value,GIAC_CONTEXT);
+  gen intnum(const gen & args,bool romberg_method,GIAC_CONTEXT,bool exactcheck);
+  bool tegral(const gen & f,const gen & x,const gen & a,const gen &b,const gen & eps,int nmax,gen & value,bool exactcheck,GIAC_CONTEXT);
   double rombergo(const gen & f,const gen & x, const gen & a, const gen & b, int n,GIAC_CONTEXT);
   double rombergt(const gen & f,const gen & x, const gen & a, const gen & b, int n,GIAC_CONTEXT);
   gen romberg(const gen & f0,const gen & x0,const gen & a,const gen &b,const gen & eps,int nmax,GIAC_CONTEXT);
-  gen evalf_int(const gen & f0,const gen & x0,const gen & a,const gen &b,const gen & eps,int nmax,bool romberg_method,GIAC_CONTEXT);
+  gen evalf_int(const gen & f0,const gen & x0,const gen & a,const gen &b,const gen & eps,int nmax,bool romberg_method,GIAC_CONTEXT,bool exactcheck=true);
   gen symb_romberg(const gen & a,const gen & b);
   gen _romberg(const gen & args,GIAC_CONTEXT);
   gen _gaussquad(const gen & args,GIAC_CONTEXT);
@@ -139,6 +144,8 @@ namespace giac {
   extern const unary_function_ptr * const  at_fourier_cn ;
 
   void comprim(vecteur & v);
+  extern const gen_op_context invpowtan2_tab[];
+  gen remove_nop(const gen & g,const gen & x,GIAC_CONTEXT);
 
 #ifndef NO_NAMESPACE_GIAC
 } // namespace giac
