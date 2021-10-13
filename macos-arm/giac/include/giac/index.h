@@ -21,6 +21,7 @@
 #include "vector.h"
 #include <iostream>
 #include <string>
+#include <cassert>
 
 //////////////////////////////////////////
 /// this commented and the old put back due to build issues... temporary change to get build going
@@ -42,7 +43,7 @@
 #include <unordered_map>
 #endif
 
-#if defined UNORDERED_MAP  && !defined(VISUALC) && !defined(__APPLE__) && !defined(__clang__)
+#if defined UNORDERED_MAP  && !defined(VISUALC) // && !defined(__APPLE__) && !defined(__clang__) 
 #include <tr1/unordered_map>
 #define HASH_MAP_NAMESPACE std::tr1
 #define hash_map unordered_map
@@ -99,6 +100,7 @@ namespace giac {
   inline bool operator >= (const index_t & a, const index_t & b){ return all_sup_equal(a,b); }
   bool all_inf_equal (const index_t & a, const index_t & b);
   inline bool operator <= (const index_t & a, const index_t & b){ return all_inf_equal(a,b); }
+  void index_gcd(const index_t & a,const index_t & b,index_t & res);
   index_t index_gcd(const index_t & a,const index_t & b);
   index_t index_lcm(const index_t & a,const index_t & b);
   inline index_t index_min(const index_t & a,const index_t & b){ return index_gcd(a,b); }
@@ -251,7 +253,7 @@ namespace giac {
   // capacity of deg_t by direct addressing
   const int POLY_VARS=POLY_VARS_DIRECT+POLY_VARS_OTHER-1;
 
-#if defined(GIAC_NO_OPTIMIZATIONS) || ((defined(VISUALC) || defined(__APPLE__)) && !defined(GIAC_VECTOR)) || defined __clang__ // || defined(NSPIRE)
+#if defined(GIAC_NO_OPTIMIZATIONS) || ((defined(VISUALC) || defined(__APPLE__)) && !defined(GIAC_VECTOR)) || defined __clang__ || defined S390X // || defined(NSPIRE) || defined FXCG
   class index_m {
   public:
     ref_index_t * riptr;
@@ -292,7 +294,7 @@ namespace giac {
     index_t::iterator end() { return riptr->i.end(); }
     index_t::const_iterator begin() const { return riptr->i.begin(); }
     index_t::const_iterator end() const { return riptr->i.end(); }
-#if !defined(NSPIRE) && !defined(OSX) && !defined(IOS) && !defined(OSXIOS)
+#if !defined(NSPIRE) && !defined(FXCG) && !defined(OSX) && !defined(IOS) && !defined(OSXIOS)
     index_t::reverse_iterator rbegin() { return riptr->i.rbegin(); }
     index_t::reverse_iterator rend() { return riptr->i.rend(); }
     index_t::const_reverse_iterator rbegin() const { return riptr->i.rbegin(); }
@@ -310,6 +312,15 @@ namespace giac {
     size_t size() const { return riptr->i.size(); }
     bool is_zero() const ; 
     size_t total_degree() const ;
+#ifdef KHICAS
+    friend stdostream & operator << (stdostream & os,const index_m & m ){
+      os << ":index_m:[ " ;
+      for (index_t::const_iterator it=m.begin();it!=m.end();++it)
+	os << *it << " ";
+      os << "] " ;
+      return(os);
+    }
+#endif
 #ifdef NSPIRE
     template<class T> friend nio::ios_base<T> & operator << (nio::ios_base<T> & os,const index_m & m ){
       os << ":index_m:[ " ;
@@ -328,7 +339,7 @@ namespace giac {
     }
 #endif
     void dbgprint() const {
-      COUT << *this << std::endl;
+      COUT << *this << '\n';
     }
     // set first index element to 0
     index_m set_first_zero() const { index_t i(riptr->i); i[0]=0; return i; }
@@ -505,6 +516,15 @@ namespace giac {
     size_t size() const ;
     bool is_zero() const ;
     size_t total_degree() const ;
+#ifdef KHICAS
+    friend stdostream & operator << (stdostream & os,const index_m & m ){
+      os << ":index_m:[ " ;
+      for (index_t::const_iterator it=m.begin();it!=m.end();++it)
+	os << *it << " ";
+      os << "] " ;
+      return(os);
+    }
+#endif
 #ifdef NSPIRE
     template<class T> friend nio::ios_base<T> & operator << (nio::ios_base<T> & os,const index_m & m ){
       os << ":index_m:[ " ;
@@ -523,7 +543,7 @@ namespace giac {
     }
 #endif
     void dbgprint() const {
-      COUT << *this << std::endl;
+      COUT << *this << '\n';
     }
     // set first index element to 0
     index_m set_first_zero() const;

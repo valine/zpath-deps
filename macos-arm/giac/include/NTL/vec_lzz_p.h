@@ -7,17 +7,12 @@
 
 NTL_OPEN_NNS
 
-NTL_vector_decl(zz_p,vec_zz_p)
+typedef Vec<zz_p> vec_zz_p;
 
-NTL_io_vector_decl(zz_p,vec_zz_p)
 
-NTL_eq_vector_decl(zz_p,vec_zz_p)
-
-void conv(vec_zz_p& x, const vec_ZZ& a);
+// legacy conversion notation
 inline vec_zz_p to_vec_zz_p(const vec_ZZ& a)
    { vec_zz_p x; conv(x, a); NTL_OPT_RETURN(vec_zz_p, x); }
-
-void conv(vec_ZZ& x, const vec_zz_p& a);
 inline vec_ZZ to_vec_ZZ(const vec_zz_p& a)
    { vec_ZZ x; conv(x, a); NTL_OPT_RETURN(vec_ZZ, x); }
 
@@ -105,6 +100,11 @@ inline vec_zz_p& operator*=(vec_zz_p& x, long a)
    return x;
 }
 
+
+
+void random(vec_zz_p& x, long n);
+inline vec_zz_p random_vec_zz_p(long n)
+   { vec_zz_p x; random(x, n); NTL_OPT_RETURN(vec_zz_p, x); }
 
 NTL_CLOSE_NNS
 

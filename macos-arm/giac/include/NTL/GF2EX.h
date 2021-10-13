@@ -6,16 +6,20 @@
 #include <NTL/vector.h>
 #include <NTL/GF2E.h>
 #include <NTL/vec_GF2E.h>
-#include <NTL/FFT.h>
+#include <NTL/vec_long.h>
 #include <NTL/GF2XVec.h>
+#include <NTL/Lazy.h>
 
 
 NTL_OPEN_NNS
 
+class GF2EXModulus; // forward declaration
 
 class GF2EX {
-
 public:
+typedef GF2E coeff_type;
+typedef GF2EXModulus modulus_type;
+
 
 vec_GF2E rep;
 
@@ -29,16 +33,15 @@ vec_GF2E rep;
 
 GF2EX() { }
 
+explicit GF2EX(long a) { *this = a; }
+explicit GF2EX(GF2 a) { *this = a; }
+explicit GF2EX(const GF2& a) { *this = a; }
+
 
 GF2EX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
 
-GF2EX(const GF2EX& a) : rep(a.rep) { }
-
-
-GF2EX& operator=(const GF2EX& a) 
-   { rep = a.rep; return *this; }
-
-~GF2EX() { }
+// default copy constructor and assignment
+// default destructor
 
 void normalize();
 // strip leading zeros
@@ -55,6 +58,15 @@ void kill()
 
    { rep.kill(); }
 
+
+
+void SetLength(long n) { rep.SetLength(n); }
+GF2E& operator[](long i) { return rep[i]; }
+const GF2E& operator[](long i) const { return rep[i]; }
+
+
+
+
 static const GF2EX& zero();
 
 
@@ -67,10 +79,23 @@ inline GF2EX(long i, long a);
 inline GF2EX(long i, GF2 a);
 inline GF2EX(long i, const GF2E& a);
 
+
+inline GF2EX(INIT_MONO_TYPE, long i, long a);
+inline GF2EX(INIT_MONO_TYPE, long i, GF2 a);
+inline GF2EX(INIT_MONO_TYPE, long i, const GF2E& a);
+inline GF2EX(INIT_MONO_TYPE, long i);
+
+
 GF2EX(GF2EX& x, INIT_TRANS_TYPE) : rep(x.rep, INIT_TRANS) { }
+
+void swap(GF2EX& x) { rep.swap(x.rep); }
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((GF2EX*))
 
 
 
@@ -114,12 +139,19 @@ void SetCoeff(GF2EX& x, long i, GF2 a);
 void SetCoeff(GF2EX& x, long i, long a);
 // x[i] = a, error is raised if i < 0
 
+void SetCoeff(GF2EX& x, long i);
+// x[i] = 1, error is raised if i < 0
+
 inline GF2EX::GF2EX(long i, const GF2E& a) { SetCoeff(*this, i, a); }
 inline GF2EX::GF2EX(long i, GF2 a) { SetCoeff(*this, i, a); }
 inline GF2EX::GF2EX(long i, long a) { SetCoeff(*this, i, a); }
 
-void SetCoeff(GF2EX& x, long i);
-// x[i] = 1, error is raised if i < 0
+
+inline GF2EX::GF2EX(INIT_MONO_TYPE, long i, const GF2E& a) { SetCoeff(*this, i, a); }
+inline GF2EX::GF2EX(INIT_MONO_TYPE, long i, GF2 a) { SetCoeff(*this, i, a); }
+inline GF2EX::GF2EX(INIT_MONO_TYPE, long i, long a) { SetCoeff(*this, i, a); }
+inline GF2EX::GF2EX(INIT_MONO_TYPE, long i) { SetCoeff(*this, i); }
+
 
 void SetX(GF2EX& x);
 // x is set to the monomial X
@@ -140,7 +172,7 @@ inline void set(GF2EX& x)
 inline void swap(GF2EX& x, GF2EX& y)
 // swap x & y (only pointers are swapped)
 
-   { swap(x.rep, y.rep); }
+   { x.swap(y); }
 
 void random(GF2EX& x, long n);
 inline GF2EX random_GF2EX(long n)
@@ -241,7 +273,7 @@ inline GF2EX to_GF2EX(const ZZ& a)
    { GF2EX x; conv(x, a); NTL_OPT_RETURN(GF2EX, x); }
 
 #ifndef NTL_TRANSITION
-inline GF2EX to_GF2EX(GF2X& a)
+inline GF2EX to_GF2EX(const GF2X& a)
    { GF2EX x; conv(x, a); NTL_OPT_RETURN(GF2EX, x); }
 #endif
 
@@ -251,6 +283,24 @@ inline GF2EX to_GF2EX(const vec_GF2E& a)
 inline GF2EX& GF2EX::operator=(const GF2E& a) { conv(*this, a); return *this; }
 inline GF2EX& GF2EX::operator=(GF2 a) { conv(*this, a); return *this; }
 inline GF2EX& GF2EX::operator=(long a) { conv(*this, a); return *this; }
+
+
+
+
+/* additional legacy conversions for v6 conversion regime */
+
+inline void conv(GF2EX& x, const GF2EX& a)
+   { x = a; }
+
+inline void conv(vec_GF2E& x, const GF2EX& a)
+   { x = a.rep; }
+
+class ZZX;
+void conv(GF2EX& x, const ZZX& a);
+
+
+/* ------------------------------------- */
+
 
 
 
@@ -612,7 +662,6 @@ long InvModStatus(GF2EX& x, const GF2EX& a, const GF2EX& f);
 class GF2EXModulus {
 public:
    GF2EXModulus();
-   ~GF2EXModulus() { }
 
    GF2EXModulus(const GF2EX& ff);
 
@@ -629,11 +678,13 @@ public:
    GF2E hlc;
    GF2EX f0;
 
-   vec_GF2E tracevec;
+   OptionalVal< Lazy<vec_GF2E> > tracevec;
+   // extra level of indirection to ensure class is relocatable
 
 }; 
 
 
+NTL_DECLARE_RELOCATABLE((GF2EXModulus*))
 inline long deg(const GF2EXModulus& F) { return F.n; }
 
 void build(GF2EXModulus& F, const GF2EX& f);
@@ -700,13 +751,7 @@ inline GF2EX& operator/=(GF2EX& x, const GF2EXModulus& F)
 
 
 
-NTL_vector_decl(GF2EX,vec_GF2EX)
-
-NTL_eq_vector_decl(GF2EX,vec_GF2EX)
-
-NTL_io_vector_decl(GF2EX,vec_GF2EX)
-
-
+typedef Vec<GF2EX> vec_GF2EX;
 
 
 
@@ -803,7 +848,9 @@ struct GF2EXArgument {
    vec_GF2EX H;
 };
 
-extern long GF2EXArgBound;
+extern 
+NTL_CHEAP_THREAD_LOCAL
+long GF2EXArgBound;
 
 
 void build(GF2EXArgument& H, const GF2EX& h, const GF2EXModulus& F, long m);

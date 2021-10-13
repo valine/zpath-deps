@@ -21,13 +21,21 @@
 #ifndef _GIAC_FIRST_H_
 #define _GIAC_FIRST_H_
 
+#ifdef NUMWORKS
+#define KHICAS 1
+#endif
+
 #ifndef GIAC_VERSION
 #define GIAC_VERSION VERSION
 #endif
 //#include <stdint.h>
 
-#ifdef __x86_64__
+#if defined(__x86_64__) || defined(__arm64__)
 #define x86_64 1
+#else
+#ifdef __MINGW_H
+#define MINGW32
+#endif
 #endif
 
 // Thanks to Jason Papadopoulos, author of msieve
@@ -55,7 +63,28 @@
 #define NO_STDEXCEPT 1
 #endif
 
+#define MAX_INTSTACK 32768 // maximal size for allocating an array by int tab[]
 
+#ifdef FXCG
+#define RAND_MAX 2147483647
+#define clock() 0
+#define CLOCK() 0
+#define CLOCK_T int
+#undef HAVE_LIBDL
+#undef HAVE_LIBPTHREAD
+struct Bidon {
+  int i;
+Bidon(int i_=0):i(i_){}
+  flush(){}
+};
+template<class T> Bidon operator << (Bidon ,const T&){ return Bidon(); }
+inline Bidon operator << (Bidon,const char *){return Bidon();}
+// #define CIN 0 //std::cin
+#define COUT Bidon(0) //std::cout
+#define CERR Bidon(0) //std::cout
+typedef unsigned pid_t;
+double lgamma(double);
+#else // FXCG
 
 #ifdef NSPIRE
 #define clock() 0
@@ -65,17 +94,17 @@
 #define CIN (*std::console_cin_ptr)
 #define COUT (*std::console_cin_ptr)
 #define CERR (*std::console_cin_ptr)
-#else
+#else // NSPIRE
 #define CIN std::cin
 #define COUT std::cout
-#ifdef EMCC
+#if defined(EMCC) || defined(EMCC2)
 #define CERR std::cout
 extern "C" double emcctime(); 
 extern "C" int glinit(int,int,int,int,int);
 extern "C" void glcontext(int);
 #define CLOCK emcctime
 #define CLOCK_T clock_t
-#else
+#else // EMCC
 #define CERR std::cerr
 #if defined(MS_SMART) || defined(NO_CLOCK)
 #define CLOCK() 0
@@ -84,8 +113,9 @@ extern "C" void glcontext(int);
 #define CLOCK clock
 #define CLOCK_T clock_t
 #endif // MS_SMART
-#endif
-#endif
+#endif // EMCC
+#endif // NSPIRE
+#endif // FXCG
 
 #ifdef __sparc__
 #define DOUBLEVAL
@@ -108,6 +138,8 @@ typedef long double giac_double;
 typedef double giac_double;
 #endif
 
+typedef long double  long_double;
+
 // sprintf replacement
 int my_sprintf(char * s, const char * format, ...);
 #ifdef GIAC_HAS_STO_38
@@ -117,7 +149,12 @@ int my_sprintf(char * s, const char * format, ...);
 #ifdef WITH_MYOSTREAM
 #include "myostream.h"
 #else
+#if defined KHICAS //&& defined STATIC_BUILTIN_LEXER_FUNCTION
+#include "stdstream"
+#define my_ostream stdostream
+#else
 #define my_ostream std::ostream
+#endif
 #endif
 
 #ifdef x86_64
@@ -126,7 +163,7 @@ int my_sprintf(char * s, const char * format, ...);
 #define alias_type size_t
 #endif
 
-#if defined(RTOS_THREADX) || defined(BESTA_OS) || defined NSPIRE
+#if defined(RTOS_THREADX) || defined(BESTA_OS) || defined NSPIRE || defined KHICAS
 #define NO_TEMPLATE_MULTGCD
 #endif
 
@@ -137,7 +174,7 @@ int my_sprintf(char * s, const char * format, ...);
 #define CLOCK_T int
 #endif
 
-#if !defined HAVE_ALLOCA_H && !defined GIAC_HAS_STO_38
+#if !defined HAVE_ALLOCA_H && !defined GIAC_HAS_STO_38 && !defined KHICAS
 #define alloca _alloca
 #endif
 
@@ -252,8 +289,8 @@ typedef unsigned __int64 ulonglong ;
 typedef long long longlong;
 typedef unsigned long long ulonglong;
 #ifdef x86_64
-  typedef int int128_t __attribute__((mode(TI)));
-  typedef unsigned int uint128_t __attribute__((mode(TI)));
+typedef int int128_t __attribute__((mode(TI)));
+typedef unsigned int uint128_t __attribute__((mode(TI)));
 #ifndef INT128
 #define INT128 1
 #endif
@@ -263,7 +300,7 @@ typedef unsigned long long ulonglong;
 // #define PSEUDO_MOD accelerates cyclic* gbasis computation significantly
 // from int_multilinear_combination in vecteur.cc (from rref?)
 #ifdef FIR
-#if !(defined(BESTA_OS) || defined(WINDOWS) || defined(OSXIOS) || defined(FIR_LINUX) || defined(FIR_ANDROID) || defined(FREERTOS) )
+#if !(defined(BESTA_OS) || defined(WINDOWS) || defined(OSXIOS) || defined(FIR_LINUX) || defined(FIR_ANDROID) || defined(FREERTOS) || defined(PRIMEWEBASM))
 // was #if !(defined(IOS) || defined(__ANDROID__)) && !defined(OSX) && !defined(LINUX)
 #define PSEUDO_MOD 
 #endif
@@ -272,6 +309,7 @@ typedef unsigned long long ulonglong;
 #endif
 
 #endif // __VISUALC__
+
 
 #ifdef VISUALC
 inline void swap_giac_double(double & a,double & b){ double c=a; a=b; b=c; }
@@ -328,7 +366,9 @@ typedef int ref_count_t;
 #include "gmp.h"
 #endif // USE_GMP_REPLACEMENTS
 
+#ifndef FXCG
 #include <cassert>
+#endif
 
 class init_gmp_memory 
 {
@@ -497,16 +537,20 @@ inline float ffloor(float f1){
 #endif
 }
 inline float finv(float f1){ return 1/f1; }
-#if defined __APPLE__ || defined EMCC || defined NO_BSD 
+#if defined __APPLE__ || defined EMCC || defined EMCC2 || defined NO_BSD 
 inline float fgamma(float f1){ return tgammaf(f1); }
 #else
-#if defined(__MINGW_H) || defined(VISUALC) // FIXME gamma, not used
+#if defined(__MINGW_H) || defined(VISUALC) || defined(FXCG)// FIXME gamma, not used
 inline float fgamma(float f1){ return f1; }
 #else
 inline float fgamma(float f1){ return gammaf(f1); } // or tgammaf(f1) on some versions of emscripten
 #endif
 #endif
+#ifdef FXCG
+inline float atan2f(float f1,float f2,int rad){ if (rad) return std::atan2(f1,f2); else return std::atan2(f1,f2)*180/3.14159265358979323846;}
+#else
 inline float atan2f(float f1,float f2,int rad){ if (rad) return atan2f(f1,f2); else return atan2f(f1,f2)*180/M_PI;}
+#endif
 #define fis_nan my_isnan
 #define fis_inf my_isinf
 #endif // BCD

@@ -3,20 +3,24 @@
 
 
 #define NTL_BITS_PER_LONG (64)
+#define NTL_NUMBITS_BPL (7)
 #define NTL_MAX_LONG (9223372036854775807L)
 #define NTL_MAX_INT (2147483647)
 #define NTL_BITS_PER_INT (32)
 #define NTL_BITS_PER_SIZE_T (64)
 #define NTL_ARITH_RIGHT_SHIFT (1)
 #define NTL_NBITS_MAX (50)
+#define NTL_WNBITS_MAX (50)
 #define NTL_DOUBLE_PRECISION (53)
 #define NTL_FDOUBLE_PRECISION (((double)(1L<<52)))
+#define NTL_LONGDOUBLE_OK (0)
+#define NTL_WIDE_DOUBLE_DP ((wide_double(1L<<52)))
 #define NTL_QUAD_FLOAT_SPLIT ((((double)(1L<<27)))+1.0)
 #define NTL_EXT_DOUBLE (0)
-#define NTL_SINGLE_MUL_OK (0)
-#define NTL_DOUBLES_LOW_HIGH (0)
-
-
+#define NTL_FMA_DETECTED (0)
+#define NTL_BIG_POINTERS (0)
+#define NTL_MIN_LONG (-NTL_MAX_LONG - 1L)
+#define NTL_MIN_INT  (-NTL_MAX_INT - 1)
 
 
 #define NTL_BB_MUL_CODE0 \
@@ -841,7 +845,5 @@ hi=hi|(sqrtab[(a>>56)&255]<<48);\
 |(revtab[(a>>48)&255]<<8)\
 |(revtab[(a>>56)&255]<<0)
 
-#define NTL_MIN_LONG (-NTL_MAX_LONG - 1L)
-#define NTL_MIN_INT  (-NTL_MAX_INT - 1)
 #endif
 
