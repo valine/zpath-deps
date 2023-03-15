@@ -237,7 +237,7 @@
 /* #undef HAVE_LIBNAUTY */
 
 /* Define to 1 if you have the `ntl' library (-lntl). */
-/* #undef HAVE_LIBNTL */
+#define HAVE_LIBNTL 1
 
 /* Define to 1 if you have the `pari' library (-lpari). */
 /* #undef HAVE_LIBPARI */
