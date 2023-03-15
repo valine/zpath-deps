@@ -28,6 +28,7 @@ namespace giac {
 #endif // ndef NO_NAMESPACE_GIAC
   typedef const char * cstcharptr;
   extern int (*micropy_ptr) (cstcharptr);
+  extern char * (*quickjs_ptr) (cstcharptr);
   extern bool user_screen; 
   extern int user_screen_io_x,user_screen_io_y,user_screen_fontsize;
   extern const int rand_max2; // replace RAND_MAX if giac_rand(contextptr) is used
@@ -78,6 +79,8 @@ namespace giac {
   gen quote_program(const gen & args,GIAC_CONTEXT);
   gen _program(const gen & args,const gen & name,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_program ;
+  extern const unary_function_ptr * const  at_monotonic;
+  extern const unary_function_ptr * const  at_sleep;
   // parser helper
   gen symb_test_equal(const gen & a,const gen & op,const gen & b);
   void adjust_sst_at(const gen & name,GIAC_CONTEXT); //used in symbolic.cc by nr_eval

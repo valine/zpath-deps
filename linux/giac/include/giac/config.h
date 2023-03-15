@@ -4,6 +4,9 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
+/* Replace GMP by libbf */
+/* #undef BF2GMP */
+
 /* Define if <unordered_map> header is available */
 #define C11_UNORDERED_MAP 1
 
@@ -73,8 +76,14 @@
    don't. */
 #define HAVE_DECL__SNWPRINTF 0
 
+/* Define to 1 if you have the <dfu_lib.h> header file. */
+/* #undef HAVE_DFU_LIB_H */
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
+
+/* Define to 1 if you have the <FL/Fl.H> header file. */
+#define HAVE_FL_FL_H 1
 
 /* Define to 1 if you have the `fwprintf' function. */
 #define HAVE_FWPRINTF 1
@@ -107,16 +116,16 @@
 #define HAVE_GETUID 1
 
 /* Define to 1 if you have the <gmpxx.h> header file. */
-/* #undef HAVE_GMPXX_H */
+#define HAVE_GMPXX_H 1
 
 /* Define to 1 if you have the <gmp.h> header file. */
-/* #undef HAVE_GMP_H */
+#define HAVE_GMP_H 1
 
 /* Define to 1 if you have the <gsl/gsl_blas.h> header file. */
-/* #undef HAVE_GSL_GSL_BLAS_H */
+#define HAVE_GSL_GSL_BLAS_H 1
 
 /* Define to 1 if you have the <gsl/gsl_eigen.h> header file. */
-/* #undef HAVE_GSL_GSL_EIGEN_H */
+#define HAVE_GSL_GSL_EIGEN_H 1
 
 /* Define if you have the iconv() function. */
 #define HAVE_ICONV 1
@@ -155,6 +164,9 @@
 /* Define to 1 if you have the `curl' library (-lcurl). */
 /* #undef HAVE_LIBCURL */
 
+/* Define to 1 if you have the `dfu' library (-ldfu). */
+/* #undef HAVE_LIBDFU */
+
 /* Define to 1 if you have the `dl' library (-ldl). */
 #define HAVE_LIBDL 1
 
@@ -162,19 +174,19 @@
 /* #undef HAVE_LIBECM */
 
 /* Define to 1 if you have the `fltk' library (-lfltk). */
-/* #undef HAVE_LIBFLTK */
+#define HAVE_LIBFLTK 1
 
 /* Define to 1 if you have the `fltk_gl' library (-lfltk_gl). */
-/* #undef HAVE_LIBFLTK_GL */
+#define HAVE_LIBFLTK_GL 1
 
 /* Define to 1 if you have the `fltk_images' library (-lfltk_images). */
-/* #undef HAVE_LIBFLTK_IMAGES */
+#define HAVE_LIBFLTK_IMAGES 1
 
 /* Now defined if fltk is available */
 /* #undef HAVE_LIBFLVW */
 
 /* Define to 1 if you have the `fontconfig' library (-lfontconfig). */
-#define HAVE_LIBFONTCONFIG 1
+/* #undef HAVE_LIBFONTCONFIG */
 
 /* Define to 1 if you have the `gc' library (-lgc). */
 /* #undef HAVE_LIBGC */
@@ -189,16 +201,16 @@
 /* #undef HAVE_LIBGLPK */
 
 /* Define to 1 if you have the `gmp' library (-lgmp). */
-/* #undef HAVE_LIBGMP */
+#define HAVE_LIBGMP 1
 
 /* Define to 1 if you have the `gmpxx' library (-lgmpxx). */
-/* #undef HAVE_LIBGMPXX */
+#define HAVE_LIBGMPXX 1
 
 /* Define to 1 if you have the `gsl' library (-lgsl). */
-/* #undef HAVE_LIBGSL */
+#define HAVE_LIBGSL 1
 
 /* Define to 1 if you have the `gslcblas' library (-lgslcblas). */
-/* #undef HAVE_LIBGSLCBLAS */
+#define HAVE_LIBGSLCBLAS 1
 
 /* Define to 1 if you have the `intl' library (-lintl). */
 /* #undef HAVE_LIBINTL */
@@ -216,16 +228,16 @@
 #define HAVE_LIBM 1
 
 /* Define to 1 if you have the `mpfi' library (-lmpfi). */
-/* #undef HAVE_LIBMPFI */
+#define HAVE_LIBMPFI 1
 
 /* Define to 1 if you have the `mpfr' library (-lmpfr). */
-/* #undef HAVE_LIBMPFR */
+#define HAVE_LIBMPFR 1
 
 /* Define to 1 if you have the `nauty' library (-lnauty). */
 /* #undef HAVE_LIBNAUTY */
 
 /* Define to 1 if you have the `ntl' library (-lntl). */
-/* #undef HAVE_LIBNTL */
+#define HAVE_LIBNTL 1
 
 /* Define to 1 if you have the `pari' library (-lpari). */
 /* #undef HAVE_LIBPARI */
@@ -248,17 +260,29 @@
 /* Define to 1 if you have the `tommath' library (-ltommath). */
 /* #undef HAVE_LIBTOMMATH */
 
+/* Define to 1 if you have the `usb-1.0' library (-lusb-1.0). */
+/* #undef HAVE_LIBUSB_1_0 */
+
 /* Define to 1 if you have the `X11' library (-lX11). */
 #define HAVE_LIBX11 1
 
+/* Define to 1 if you have the `Xcursor' library (-lXcursor). */
+/* #undef HAVE_LIBXCURSOR */
+
 /* Define to 1 if you have the `Xext' library (-lXext). */
-#define HAVE_LIBXEXT 1
+/* #undef HAVE_LIBXEXT */
+
+/* Define to 1 if you have the `Xfixes' library (-lXfixes). */
+/* #undef HAVE_LIBXFIXES */
 
 /* Define to 1 if you have the `Xft' library (-lXft). */
-#define HAVE_LIBXFT 1
+/* #undef HAVE_LIBXFT */
 
 /* Define to 1 if you have the `Xinerama' library (-lXinerama). */
-#define HAVE_LIBXINERAMA 1
+/* #undef HAVE_LIBXINERAMA */
+
+/* Define to 1 if you have the `Xrender' library (-lXrender). */
+/* #undef HAVE_LIBXRENDER */
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1
@@ -288,10 +312,10 @@
 #define HAVE_MMAP 1
 
 /* Define to 1 if you have the <mpfi.h> header file. */
-/* #undef HAVE_MPFI_H */
+#define HAVE_MPFI_H 1
 
 /* Define to 1 if you have the <mpfr.h> header file. */
-/* #undef HAVE_MPFR_H */
+#define HAVE_MPFR_H 1
 
 /* Define to 1 if you have the `mpfr_set_str_raw' function. */
 /* #undef HAVE_MPFR_SET_STR_RAW */
@@ -485,7 +509,7 @@
 #define PACKAGE_NAME "giac"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "giac 1.6.0"
+#define PACKAGE_STRING "giac 1.9.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "giac"
@@ -494,7 +518,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.6.0"
+#define PACKAGE_VERSION "1.9.0"
 
 /* Define if <inttypes.h> exists and defines unusable PRI* macros. */
 /* #undef PRI_MACROS_BROKEN */
@@ -536,7 +560,7 @@
 /* #undef USE_OPENGL32 */
 
 /* Version number of package */
-#define VERSION "1.6.0"
+#define VERSION "1.9.0"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

@@ -23,6 +23,14 @@
 namespace giac {
 #endif // ndef NO_NAMESPACE_GIAC
   class gen;
+  struct cpureal_t {
+    double cpu;
+    double real;
+  };
+  inline std::ostream & operator << (std::ostream & os,const cpureal_t & cr){ return os << "[" << cr.cpu << "," << cr.real << "]"; }
+  inline cpureal_t operator -(const cpureal_t & t1,const cpureal_t & t2){ cpureal_t ans={std::floor(1e6*(t1.cpu-t2.cpu)+.5)*1e-6,std::floor(1e6*(t1.real-t2.real)+.5)*1e-6}; return ans;}
+  double realtime(); // since 2021
+  cpureal_t clock_realtime();
 
   gen _about(const gen & g,GIAC_CONTEXT);
   gen _zip(const gen & args,GIAC_CONTEXT);
@@ -77,15 +85,16 @@ namespace giac {
   gen _Nullspace(const gen & g,GIAC_CONTEXT);
   gen _assign(const gen & g,GIAC_CONTEXT);
   gen _implicitplot3d(const gen & g,GIAC_CONTEXT);
-  gen _readwav(const gen & g,GIAC_CONTEXT);
-  gen _writewav(const gen & g,GIAC_CONTEXT);
+  //gen _readwav(const gen & g,GIAC_CONTEXT);
+  //gen _writewav(const gen & g,GIAC_CONTEXT);
   gen _animate(const gen & g,GIAC_CONTEXT);
   gen _animate3d(const gen & g,GIAC_CONTEXT);
   gen _even(const gen & g,GIAC_CONTEXT);
   gen _odd(const gen & g,GIAC_CONTEXT);
   gen _writergb(const gen & g,GIAC_CONTEXT);
   gen _readrgb(const gen & g,GIAC_CONTEXT);
-
+  gen _interp(const gen &g,GIAC_CONTEXT); // addition by L.Marohnić
+  
 
   int write_png(const char *file_name, void *rows, int w, int h, int colortype, int bitdepth);
   extern bool (* readrgb_ptr)(const std::string & s,int W,int H,gen & res);
@@ -120,6 +129,7 @@ namespace giac {
   extern const unary_function_ptr * const  at_binprint ;
   extern const unary_function_ptr * const  at_count;
   extern const unary_function_ptr * const  at_time;
+  extern const unary_function_ptr * const  at_interp; // addition by L.Marohnić
 
 #ifndef NO_NAMESPACE_GIAC
 } // namespace giac

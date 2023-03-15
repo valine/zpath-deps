@@ -209,7 +209,7 @@ namespace giac {
   bool iszero(const std::vector<int> & p);
   
   // matrice related functions
-  bool ckmatrix(const matrice & a,bool allow_embedded_vect);
+  bool ckmatrix(const matrice & a,bool allow_embedded_vect,bool ckundef=true);
   bool ckmatrix(const matrice & a);
   bool ckmatrix(const gen & a);
   bool ckmatrix(const gen & a,bool);
@@ -223,7 +223,7 @@ namespace giac {
   int mrows(const matrice & a);
   int mcols(const matrice & a);
   void mdims(const matrice &m,int & r,int & c);
-  void mtran(const matrice & a,matrice & res,int ncolres=0);
+  void mtran(const matrice & a,matrice & res,int ncolres=0,bool ckundef=true);
   matrice mtran(const matrice & a);
   gen _tran(const gen & a,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_tran ;
@@ -260,6 +260,7 @@ namespace giac {
   bool multvectvector_int_vector_int(const std::vector< std::vector<int> > & M,const std::vector<int> & v,int modulo,std::vector<int> & Mv);
   void tran_vect_vector_int(const std::vector< std::vector<int> > & N,std::vector< std::vector<int> > & tN);
   void apply_permutation(const std::vector<int> & permutation,const std::vector<int> &x,std::vector<int> & y);
+  void apply_permutation(vecteur &v,std::vector<int> &p,bool keep_p=false); // efficient sorting of v w.r.t. p, added by L. Marohnic
   void vecteur2vector_int(const vecteur & v,int modulo,std::vector<int> & res);
   
   enum matrix_algorithms {
@@ -439,6 +440,7 @@ namespace giac {
   matrice matpow(const matrice & m,const gen & n,GIAC_CONTEXT);
   gen _matpow(const gen & a,GIAC_CONTEXT);
 
+  bool mker(std::vector< std::vector<int> > & a,std::vector< std::vector<int> > & v,int modulo);
   bool mker(const matrice & a,vecteur & v,int algorithm,GIAC_CONTEXT);
   bool mker(const matrice & a,vecteur & v,GIAC_CONTEXT); // algorithm=0
   vecteur mker(const matrice & a,GIAC_CONTEXT);
@@ -464,9 +466,10 @@ namespace giac {
   int vecteur2gsl_vector(const vecteur & v,gsl_vector * w,GIAC_CONTEXT); // no alloc
   int vecteur2gsl_vector(const_iterateur it,const_iterateur itend,gsl_vector * w,GIAC_CONTEXT);
   vecteur gsl_vector2vecteur(const gsl_vector * v);
+  int matrice2gsl_matrix(const matrice & m,int i0,int j0,int n1,int n2,bool transp,gsl_matrix * w,GIAC_CONTEXT);
   int matrice2gsl_matrix(const matrice & m,gsl_matrix * w,GIAC_CONTEXT);
   gsl_matrix * matrice2gsl_matrix(const matrice & m,GIAC_CONTEXT);
-  matrice gsl_matrix2matrice(const gsl_matrix * v);
+  matrice gsl_matrix2matrice(const gsl_matrix * v,bool transp=false);
   vecteur gsl_permutation2vecteur(const gsl_permutation * p,GIAC_CONTEXT);
 #endif // HAVE_LIBGSL
   
@@ -482,6 +485,30 @@ namespace giac {
 
   gen _cholesky(const gen & a,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_cholesky ;
+#if !defined KHICAS && !defined GIAC_HAS_STO_38
+  // additions by L. Marohnić:
+  struct log_output_redirect { // redirecting log output to string
+    log_output_redirect(GIAC_CONTEXT) { old=logptr(ctx=contextptr)->rdbuf(buffer.rdbuf()); }
+    ~log_output_redirect() { logptr(ctx)->rdbuf(old); }
+    std::string get_buffer_string() const { return buffer.str(); }
+    bool has_warning() const;
+  private:
+    const context *ctx;
+    std::stringstream buffer;
+    std::streambuf *old;
+  };
+#endif
+  // LDL decomposition, inertia computation and solve_indef for fast system solving using the factorization
+  bool ldl(matrice & a,std::vector<int> & perm,int mat_type,bool &sing,double time_limit,GIAC_CONTEXT);
+#ifdef HAVE_LIBLAPACK
+  bool solve_indef(double *A,double **WORK,int *IPIV,double *b,int N,int NRHS,int *p,int *n,int *z);
+#endif
+  bool solve_indef(matrice &A,const vecteur *b,vecteur &x,int *p,int *n,int *z,GIAC_CONTEXT);
+  gen _ldl(const gen & a,GIAC_CONTEXT);
+  extern const unary_function_ptr * const  at_ldl ;
+  gen _inertia(const gen & a,GIAC_CONTEXT);
+  extern const unary_function_ptr * const  at_inertia ;
+  // end additions by L. Marohnić
   gen _svd(const gen & a,GIAC_CONTEXT);
   extern const unary_function_ptr * const  at_svd ;
   gen _basis(const gen & a,GIAC_CONTEXT);
