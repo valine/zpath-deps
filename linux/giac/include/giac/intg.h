@@ -130,10 +130,7 @@ namespace giac {
 
   gen preval(const gen & f,const gen & x,const gen & a,const gen & b,GIAC_CONTEXT);
   gen _ibpdv(const gen & args,GIAC_CONTEXT);
-  extern const unary_function_ptr * const  at_ibpdv;
-
-  gen _periodic(const gen & g,GIAC_CONTEXT);
-  extern const unary_function_ptr * const  at_periodic;
+  extern const unary_function_ptr * const  at_ibpdv;  
 
   gen fourier_an(const gen & f,const gen & x,const gen & T,const gen & n,const gen & a,GIAC_CONTEXT);
   gen fourier_bn(const gen & f,const gen & x,const gen & T,const gen & n,const gen & a,GIAC_CONTEXT);

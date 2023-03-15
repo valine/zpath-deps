@@ -82,9 +82,6 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
-/* Define to 1 if you have the <FL/Fl.H> header file. */
-#define HAVE_FL_FL_H 1
-
 /* Define to 1 if you have the `fwprintf' function. */
 #define HAVE_FWPRINTF 1
 
@@ -174,13 +171,13 @@
 /* #undef HAVE_LIBECM */
 
 /* Define to 1 if you have the `fltk' library (-lfltk). */
-#define HAVE_LIBFLTK 1
+/* #undef HAVE_LIBFLTK */
 
 /* Define to 1 if you have the `fltk_gl' library (-lfltk_gl). */
-#define HAVE_LIBFLTK_GL 1
+/* #undef HAVE_LIBFLTK_GL */
 
 /* Define to 1 if you have the `fltk_images' library (-lfltk_images). */
-#define HAVE_LIBFLTK_IMAGES 1
+/* #undef HAVE_LIBFLTK_IMAGES */
 
 /* Now defined if fltk is available */
 /* #undef HAVE_LIBFLVW */
@@ -195,7 +192,7 @@
 /* #undef HAVE_LIBGFORTRAN */
 
 /* Define to 1 if you have the `GL' library (-lGL). */
-#define HAVE_LIBGL 1
+/* #undef HAVE_LIBGL */
 
 /* Define to 1 if you have the `glpk' library (-lglpk). */
 /* #undef HAVE_LIBGLPK */
@@ -243,7 +240,7 @@
 /* #undef HAVE_LIBPARI */
 
 /* Define to 1 if you have the `png' library (-lpng). */
-#define HAVE_LIBPNG 1
+/* #undef HAVE_LIBPNG */
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #define HAVE_LIBPTHREAD 1
@@ -264,16 +261,10 @@
 /* #undef HAVE_LIBUSB_1_0 */
 
 /* Define to 1 if you have the `X11' library (-lX11). */
-#define HAVE_LIBX11 1
-
-/* Define to 1 if you have the `Xcursor' library (-lXcursor). */
-/* #undef HAVE_LIBXCURSOR */
+/* #undef HAVE_LIBX11 */
 
 /* Define to 1 if you have the `Xext' library (-lXext). */
 /* #undef HAVE_LIBXEXT */
-
-/* Define to 1 if you have the `Xfixes' library (-lXfixes). */
-/* #undef HAVE_LIBXFIXES */
 
 /* Define to 1 if you have the `Xft' library (-lXft). */
 /* #undef HAVE_LIBXFT */
@@ -281,11 +272,8 @@
 /* Define to 1 if you have the `Xinerama' library (-lXinerama). */
 /* #undef HAVE_LIBXINERAMA */
 
-/* Define to 1 if you have the `Xrender' library (-lXrender). */
-/* #undef HAVE_LIBXRENDER */
-
 /* Define to 1 if you have the `z' library (-lz). */
-#define HAVE_LIBZ 1
+/* #undef HAVE_LIBZ */
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -354,7 +342,7 @@
 /* #undef HAVE_PARI_PARI_H */
 
 /* Define to 1 if you have the <png.h> header file. */
-#define HAVE_PNG_H 1
+/* #undef HAVE_PNG_H */
 
 /* Define if your printf() function supports format strings with positions. */
 #define HAVE_POSIX_PRINTF 1
@@ -509,7 +497,7 @@
 #define PACKAGE_NAME "giac"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "giac 1.9.0"
+#define PACKAGE_STRING "giac 1.7.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "giac"
@@ -518,7 +506,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.9.0"
+#define PACKAGE_VERSION "1.7.0"
 
 /* Define if <inttypes.h> exists and defines unusable PRI* macros. */
 /* #undef PRI_MACROS_BROKEN */
@@ -560,7 +548,7 @@
 /* #undef USE_OPENGL32 */
 
 /* Version number of package */
-#define VERSION "1.9.0"
+#define VERSION "1.7.0"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

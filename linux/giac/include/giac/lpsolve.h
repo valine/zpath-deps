@@ -216,7 +216,7 @@ struct lp_problem {
     }
     int nc() { return constr.lhs.size(); }
     int nv() { return variables.size(); }
-    void message(const char* msg,int type=0);
+    void message(const char* msg,bool err=false);
     void report_status(const char* msg);
     void add_identifiers_from(const gen &g);
     bool assign_variable_types(const gen &g,int t);
@@ -235,8 +235,7 @@ struct lp_problem {
     void remove_variable(int j);
     void find_implied_integers();
     void postprocess();
-    void print_constraint_matrix_dim(char *buffer);
-    int solve(bool make_exact);
+    int solve();
     vecteur output_solution(bool sort_vars);
     //GLPK routines
 #ifdef HAVE_LIBGLPK

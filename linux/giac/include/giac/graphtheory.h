@@ -82,9 +82,9 @@ enum distribution_type {
     _DISTR_DISCRETE
 };
 
-// GRAPH THEORY GIAC COMMANDS
+bool is_graphe(const gen &g,std::string &disp_out,GIAC_CONTEXT);
 
-bool is_graphe(const gen &g);
+// GRAPH THEORY GIAC COMMANDS
 
 gen _graph(const gen &g,GIAC_CONTEXT);
 gen _digraph(const gen &g,GIAC_CONTEXT);

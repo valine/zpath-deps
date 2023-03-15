@@ -33,14 +33,9 @@ namespace giac {
 #endif // ndef NO_NAMESPACE_GIAC
 
   gen remove_pnt_vect(const gen & g);
-  extern const unary_function_ptr * const  at_volume ;
   extern const unary_function_ptr * const  at_sphere ;
   extern const unary_function_ptr * const  at_cylindre ;
   extern const unary_function_ptr * const  at_plan ;
-  extern const unary_function_ptr * const  at_tetraedre ;
-  extern const unary_function_ptr * const  at_octaedre ;
-  extern const unary_function_ptr * const  at_dodecaedre ;
-  extern const unary_function_ptr * const  at_icosaedre ;
   gen hypersurface(const gen & args,const gen & equation,const gen & vars);
   gen do_point3d(const gen & g);
   bool is3d(const gen & g);
