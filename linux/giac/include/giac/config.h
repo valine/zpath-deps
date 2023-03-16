@@ -228,7 +228,7 @@
 #define HAVE_LIBM 1
 
 /* Define to 1 if you have the `mpfi' library (-lmpfi). */
-#define HAVE_LIBMPFI 1
+/* #undef HAVE_LIBMPFI */
 
 /* Define to 1 if you have the `mpfr' library (-lmpfr). */
 #define HAVE_LIBMPFR 1
