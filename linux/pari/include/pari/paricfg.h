@@ -16,7 +16,7 @@
 #define PARI_MT_ENGINE "single"
 
 #define PARI_DOUBLE_FORMAT -
-#define GCC_VERSION "gcc version 11.3.0 (Ubuntu 11.3.0-1ubuntu1~22.04)"
+#define GCC_VERSION "gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)"
 #define ASMINLINE
 
 /*  Location of GNU gzip program (enables reading of .Z and .gz files). */

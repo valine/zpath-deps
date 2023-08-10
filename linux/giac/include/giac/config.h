@@ -228,7 +228,7 @@
 #define HAVE_LIBM 1
 
 /* Define to 1 if you have the `mpfi' library (-lmpfi). */
-/* #undef HAVE_LIBMPFI */
+#define HAVE_LIBMPFI 1
 
 /* Define to 1 if you have the `mpfr' library (-lmpfr). */
 #define HAVE_LIBMPFR 1
@@ -243,7 +243,7 @@
 /* #undef HAVE_LIBPARI */
 
 /* Define to 1 if you have the `png' library (-lpng). */
-#define HAVE_LIBPNG 1
+/* #undef HAVE_LIBPNG */
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #define HAVE_LIBPTHREAD 1
@@ -285,7 +285,7 @@
 /* #undef HAVE_LIBXRENDER */
 
 /* Define to 1 if you have the `z' library (-lz). */
-#define HAVE_LIBZ 1
+/* #undef HAVE_LIBZ */
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -354,7 +354,7 @@
 /* #undef HAVE_PARI_PARI_H */
 
 /* Define to 1 if you have the <png.h> header file. */
-#define HAVE_PNG_H 1
+/* #undef HAVE_PNG_H */
 
 /* Define if your printf() function supports format strings with positions. */
 #define HAVE_POSIX_PRINTF 1
